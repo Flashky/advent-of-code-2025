@@ -1,0 +1,5 @@
+---
+exclude_paths:
+  - "**/test/**"
+  - "README.md"
+  - "**/README.md"
