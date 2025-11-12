@@ -1,5 +1,7 @@
 # 🎄 Advent of Code 2025
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/6792021b6e6745b4ab259853e2e1e5e9)](https://app.codacy.com/gh/Flashky/advent-of-code-2025?utm_source=github.com&utm_medium=referral&utm_content=Flashky/advent-of-code-2025&utm_campaign=Badge_Grade)
+
 ## ⚙️ Setup Guide
 
 This guide will help you quickly configure a new repository from this template for the current year's Advent of Code.
