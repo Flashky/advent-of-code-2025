@@ -21,7 +21,59 @@ on:
       - '.github/**'
 
 jobs:
-  
+
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+
+      # Verify for existing token secret set
+      - name: Check Personal Access Token
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          echo "Checking personal access token."
+          SECRETS_URL="${{ github.server_url }}/${{ github.repository }}/settings/secrets/actions"
+          
+          log_pat_error() {
+            echo -e "\e[93mTo generate a personal access token (PAT) for GitHub Actions:\e[0m" >&2
+            echo -e "\e[93m1. Go to \e[94mhttps://github.com/settings/tokens\e[0m" >&2
+            echo -e "\e[93m2. Click on \e[92mGenerate new token\e[0m\e[93m and then on \e[92mGenerate new token (classic) \e[0m\e[93m\e[0m" >&2
+            echo -e "\e[93m3. Give your token a name, select the required scopes (e.g., repo), and click on \e[92mGenerate token\e[93m\e[0m" >&2
+            echo -e "\e[93m4. Copy the generated token" >&2
+            echo -e "\e[93m5. Go to your repository action secret settings: \e[94m$SECRETS_URL\e[93m" >&2
+            echo -e "\e[93m6. Name the secret \e[94mPAT_TOKEN\e[93m and paste the copied token as the value" >&2
+          }
+          
+          if [ -z "$PAT_TOKEN" ]; then
+            echo -e "\e[91m❌ Error: PAT_TOKEN secret is not set.\e[0m" >&2
+            log_pat_error
+            exit 1
+          fi
+          RESPONSE=$(curl -s -D - -H "Authorization: token $PAT_TOKEN" https://api.github.com/user)
+          
+          HTTP_CODE=$(echo "$RESPONSE" | head -n 1 | awk '{print $2}')
+          SCOPES=$(echo "$RESPONSE" | grep -i "X-OAuth-Scopes" | awk '{print $2}' | tr -d '\r')
+          
+          # 1. Verify 401 and 403 errors
+          if [ "$HTTP_CODE" -eq 401 ] || [ "$HTTP_CODE" -eq 403 ]; then
+             echo -e "\e[91m❌ Error: PAT_TOKEN secret is invalid/expired.\e[0m" >&2
+            log_pat_error
+            exit 1
+          fi
+          # Verify other errors
+          if [ "$HTTP_CODE" -ge 400 ]; then
+            echo -e "\e[91m❌ Error: Unexpected HTTP status code ($HTTP_CODE).\e[0m" >&2
+            log_pat_error
+            exit 1
+          fi
+          
+          if [[ "$SCOPES" != *"repo"* ]]; then
+            echo "\e[91m❌ Error: missing scope 'repo' on the PAT.\e[0m" >&2
+            log_pat_error
+            exit 1
+          fi
+
+          
   build:
     runs-on: ubuntu-latest
     steps:
