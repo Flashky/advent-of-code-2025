@@ -6,6 +6,8 @@ on:
         description: 'Advent of Code year'
         required: true
         default: 'yyyy'
+env:
+  AOC_YEAR: ${{ github.event.inputs.aoc_year }}
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -20,27 +22,69 @@ jobs:
           fi
 
       # Verify for existing token secret set
-      - name: Check for Token Secret
+      - name: Check Personal Access Token
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
         run: |
-          if [ -z "${{ secrets.PAT_TOKEN }}" ]; then
-            echo -e "\e[91mError: PAT_TOKEN secret is not set.\e[0m"
-            echo -e "\e[93mTo generate a personal access token (PAT) for GitHub Actions:\e[0m"
-            echo -e "\e[93m1. Go to \e[94mhttps://github.com/settings/tokens\e[0m"
-            echo -e "\e[93m2. Click on \e[92mGenerate new token\e[0m\e[93m and then on \e[92mGenerate new token (classic) \e[0m\e[93m\e[0m"
-            echo -e "\e[93m3. Give your token a name, select the required scopes (e.g., repo), and click on \e[92mGenerate token\e[93m\e[0m"
-            echo -e "\e[93m4. Copy the generated token"
-            echo -e "\e[93m5. Go to your repository on GitHub -> Settings -> Secrets -> New repository secret"
-            echo -e "\e[93m6. Name the secret \e[94mPAT_TOKEN\e[93m and paste the copied token as the value"
+          echo "Checking personal access token."
+          SECRETS_URL="${{ github.server_url }}/${{ github.repository }}/settings/secrets/actions"
+
+          log_pat_error() {
+            echo -e "\e[93mTo generate a personal access token (PAT) for GitHub Actions:\e[0m" >&2
+            echo -e "\e[93m1. Go to \e[94mhttps://github.com/settings/tokens\e[0m" >&2
+            echo -e "\e[93m2. Click on \e[92mGenerate new token\e[0m\e[93m and then on \e[92mGenerate new token (classic) \e[0m\e[93m\e[0m" >&2
+            echo -e "\e[93m3. Give your token a name, select the required scopes (e.g., repo), and click on \e[92mGenerate token\e[93m\e[0m" >&2
+            echo -e "\e[93m4. Copy the generated token" >&2
+            echo -e "\e[93m5. Go to your repository action secret settings: \e[94m$SECRETS_URL\e[93m" >&2
+            echo -e "\e[93m6. Name the secret \e[94mPAT_TOKEN\e[93m and paste the copied token as the value" >&2
+          }
+
+          if [ -z "$PAT_TOKEN" ]; then
+            echo -e "::group::\e[91m❌ Error: PAT_TOKEN secret is not set.\e[0m" >&2
+            log_pat_error
+            echo "::error title=Missing PAT_TOKEN::PAT_TOKEN secret is not set."
+            echo "::endgroup::"
+            exit 1
+          fi
+          RESPONSE=$(curl -s -D - -H "Authorization: token $PAT_TOKEN" https://api.github.com/user)
+
+          HTTP_CODE=$(echo "$RESPONSE" | head -n 1 | awk '{print $2}')
+          SCOPES=$(echo "$RESPONSE" | grep -i "X-OAuth-Scopes" | awk '{print $2}' | tr -d '\r')
+
+          # 1. Verify 401 and 403 errors
+          if [ "$HTTP_CODE" -eq 401 ] || [ "$HTTP_CODE" -eq 403 ]; then
+            echo -e "::group::\e[91m❌ Error: PAT_TOKEN secret is invalid or has expired.\e[0m" >&2
+            log_pat_error
+            echo "::error title=The PAT_TOKEN is invalid or has expired::Please, refresh the PAT_TOKEN."
+            echo "::endgroup::"
+            exit 1
+          fi
+
+          # Verify other errors
+          if [ "$HTTP_CODE" -ge 400 ]; then
+            echo -e "::group::\e[91m❌ Error: Unexpected HTTP status code ($HTTP_CODE).\e[0m" >&2
+            log_pat_error
+            echo "::error title=Unexpected HTTP Status Code::Found: $HTTPCODE."
+            echo "::endgroup::"
+            exit 1
+          fi
+
+          if [[ "$SCOPES" != *"repo"* ]]; then
+            echo "::group::\e[91m❌ Error: missing scope 'repo' on the PAT.\e[0m" >&2
+            log_pat_error
+            echo "::error title=Missing permissions at PAT_TOKEN::Please, refresh the PAT_TOKEN with 'repo' scope."
+            echo "::endgroup::"
             exit 1
           fi
 
       # Verify for a valid year input
       - name: Check Year Format
         run: |
-          if echo "${{ github.event.inputs.aoc_year }}" | grep -E -q '^[0-9]{4}$'; then
-            echo "Year '${{ github.event.inputs.aoc_year }}' format is valid."
+          if echo "${{ env.AOC_YEAR }}" | grep -E -q '^[0-9]{4}$'; then
+            echo "Year '${{ env.AOC_YEAR }}' format is valid."
           else
-            echo -e "\e[91mError: Invalid year format ('${{ github.event.inputs.aoc_year }}'). Please provide a valid 4-digit year.\e[0m"
+            echo -e "\e[91mError: Invalid input year: '${{ env.AOC_YEAR }}'.\e[0m"
+            echo "::error title=Invalid input year: '${{ env.AOC_YEAR }}'::Please provide a valid 4-digit year (example: 2025)."
             exit 1
           fi
           
@@ -48,62 +92,63 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v5
+      - uses: actions/checkout@v5
 
-    # Update repository description
-    - name: Update Repository Description  
-      run: |
-        token="${{ secrets.PAT_TOKEN }}"    
-        url=https://api.github.com/repos/${{ github.repository }}
-        description='{"description": "Advent of Code ${{ github.event.inputs.aoc_year }}"}'
-        curl -X PATCH -H "Authorization: Bearer $token" -H "Accept: application/vnd.github.v3+json" -d "$description" $url
+        # Update repository description
+      - name: Update Repository Description
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: gh repo edit -d "Advent of Code ${{ env.AOC_YEAR }}"
 
-    # Update repository topics
-    - name: Update Repository Topics
-      run: |
-        token="${{ secrets.PAT_TOKEN }}"
-        url="https://api.github.com/repos/${{ github.repository }}/topics"
-        topics='{"names": ["java", "advent-of-code", "advent-of-code-${{ github.event.inputs.aoc_year }}", "advent-of-code-${{ github.event.inputs.aoc_year }}-java"]}'
-        curl -X PUT -H "Authorization: Bearer $token" -H "Accept: application/vnd.github.mercy-preview+json" -d "$topics" $url
+        # Update repository topics
+      - name: Update Repository Topics
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          gh repo edit \
+            --add-topic "java" \
+            --add-topic "advent-of-code" \
+            --add-topic "advent-of-code-${{ env.AOC_YEAR }}" \
+            --add-topic "advent-of-code-${{ env.AOC_YEAR }}-java" \
+            --add-topic "advent-of-code-flashky"
 
-    # Clean up folders and README if AoC event is 2025 or newer.
-    - name: Clean Up (2025+)
-      if: ${{ github.event.inputs.aoc_year >= 2025 }}
-      run: |
-        echo "Year $AOC_YEAR is 2025 or greater. Performing cleanup..."
+      # Clean up folders and README if AoC event is 2025 or newer.
+      - name: Clean Up (2025+)
+        if: ${{ env.AOC_YEAR >= 2025 }}
+        run: |
+          echo "Year ${{ env.AOC_YEAR }} is 2025 or greater. Performing cleanup..."
+  
+          echo "Removing day13-day25 source and test folders."
+          rm -rf src/{main,test}/java/com/adventofcode/flashk/day{13..25}
+  
+          echo "Removing day 13 to 25 links from README.md."
+          sed -i '/^- \[Day \(1[3-9]\|2[0-5]\)/d' README.md
 
-        echo "Removing day13-day25 source and test folders."
-        rm -rf src/{main,test}/java/com/adventofcode/flashk/day{13..25}
+      # Update README.md
+      - name: Update README.md
+        run: |
+          find . -name 'README.md' | xargs sed -i 's/{year}/'${{ env.AOC_YEAR }}'/g'
 
-        echo "Removing day 13 to 25 links from README.md."
-        sed -i '/^- \[Day \(1[3-9]\|2[0-5]\)/d' README.md
+      # Update pom.xml
+      - name: Update pom.xml
+        run: |
+          find . -name 'pom.xml' | xargs sed -i 's/yyyy/'${{ env.AOC_YEAR }}'/g'
 
-    # Update README.md
-    - name: Update README.md
-      run: |
-        find . -name 'README.md' | xargs sed -i 's/{year}/'${{ github.event.inputs.aoc_year }}'/g'
+      # Open Pull Request
+      - name: Open Pull Request
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        id: pull-request
+        with:
+          token: ${{ secrets.PAT_TOKEN }}
+          commit-message: "Update year to ${{ env.AOC_YEAR}}"
+          title: "Update year to ${{ env.AOC_YEAR}}"
+          body: |
+            This PR is auto-generated by [create-pull-request](https://github.com/peter-evans/create-pull-request).
 
-    # Update pom.xml
-    - name: Update pom.xml
-      run: |
-        find . -name 'pom.xml' | xargs sed -i 's/yyyy/'${{ github.event.inputs.aoc_year }}'/g'
-
-    # Open Pull Request
-    - name: Open Pull Request
-      uses: peter-evans/create-pull-request@v7
-      id: pull-request
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: "Update year to ${{ github.event.inputs.aoc_year }}"
-        title: "Update year to ${{ github.event.inputs.aoc_year }}"
-        body: |
-          This PR is auto-generated by [create-pull-request](https://github.com/peter-evans/create-pull-request).
-
-    # Check PR information
-    - name: Check PR information
-      if: ${{ steps.pull-request.outputs.pull-request-number }}
-      run: |
-        echo "Pull Request Number - ${{ steps.pull-request.outputs.pull-request-number }}"
-        echo "Pull Request URL - ${{ steps.pull-request.outputs.pull-request-url }}"
-
-        
+      # Check PR information
+      - name: Check PR information
+        if: ${{ steps.pull-request.outputs.pull-request-number }}
+        run: |
+          echo "Pull Request Number - ${{ steps.pull-request.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.pull-request.outputs.pull-request-url }}"
+          
