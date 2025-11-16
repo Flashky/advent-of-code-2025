@@ -10,20 +10,24 @@ on:
       - '**'
     tags-ignore:
       - '**'
-    paths-ignore: 
+    paths-ignore:
       - '.github/**'
   pull_request:
     branches:
       - '**'
     tags-ignore:
       - '**'
-    paths-ignore: 
+    paths-ignore:
       - '.github/**'
 
 jobs:
 
   verify:
+    # Don't run just after creating repo from template
+    if: github.run_number != 1
     runs-on: ubuntu-latest
+    outputs:
+      skip_report_status: ${{ steps.check_codacy_token.outputs.skip_status }}
     steps:
 
       # Verify for existing token secret set
@@ -45,8 +49,10 @@ jobs:
           }
           
           if [ -z "$PAT_TOKEN" ]; then
-            echo -e "\e[91m❌ Error: PAT_TOKEN secret is not set.\e[0m" >&2
+            echo -e "::group::\e[91m❌ Error: PAT_TOKEN secret is not set.\e[0m" >&2
             log_pat_error
+            echo "::error title=Missing PAT_TOKEN::PAT_TOKEN secret is not set."
+            echo "::endgroup::"
             exit 1
           fi
           RESPONSE=$(curl -s -D - -H "Authorization: token $PAT_TOKEN" https://api.github.com/user)
@@ -56,61 +62,83 @@ jobs:
           
           # 1. Verify 401 and 403 errors
           if [ "$HTTP_CODE" -eq 401 ] || [ "$HTTP_CODE" -eq 403 ]; then
-             echo -e "\e[91m❌ Error: PAT_TOKEN secret is invalid/expired.\e[0m" >&2
+            echo -e "::group::\e[91m❌ Error: PAT_TOKEN secret is invalid or has expired.\e[0m" >&2
             log_pat_error
+            echo "::error title=The PAT_TOKEN is invalid or has expired::Please, refresh the PAT_TOKEN."
+            echo "::endgroup::"
             exit 1
           fi
+          
           # Verify other errors
           if [ "$HTTP_CODE" -ge 400 ]; then
-            echo -e "\e[91m❌ Error: Unexpected HTTP status code ($HTTP_CODE).\e[0m" >&2
+            echo -e "::group::\e[91m❌ Error: Unexpected HTTP status code ($HTTP_CODE).\e[0m" >&2
             log_pat_error
+            echo "::error title=Unexpected HTTP Status Code::Found: $HTTPCODE."
+            echo "::endgroup::"
             exit 1
           fi
           
           if [[ "$SCOPES" != *"repo"* ]]; then
-            echo "\e[91m❌ Error: missing scope 'repo' on the PAT.\e[0m" >&2
+            echo "::group::\e[91m❌ Error: missing scope 'repo' on the PAT.\e[0m" >&2
             log_pat_error
+            echo "::error title=Missing permissions at PAT_TOKEN::Please, refresh the PAT_TOKEN with 'repo' scope."
+            echo "::endgroup::"
             exit 1
           fi
 
-          
+      # Verify for existing Codacy token secret set
+      # Setup is optional, reports will be skipped if not set.
+      - name: Check Codacy Project Token
+        id: check_codacy_token
+        continue-on-error: true
+        run: |
+          if [ -z "${{ secrets.CODACY_PROJECT_TOKEN }}" ]; then
+            echo "::warning title=Missing CODACY_PROJECT_TOKEN::Codacy coverage report job will be skipped."
+            echo "skip_status=true" >> $GITHUB_OUTPUT
+            exit 1 
+          fi
+          echo "skip_status=false" >> $GITHUB_OUTPUT
+
   build:
     runs-on: ubuntu-latest
     needs: verify
     steps:
-    - uses: actions/checkout@v5
-      with:
-        submodules: recursive
-        token: ${{ secrets.PAT_TOKEN }}
-    - uses: actions/cache@v4
-      with:
-        path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-    - name: Set up JDK
-      uses: actions/setup-java@v5
-      with:
-        distribution: temurin
-        java-version: 25
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-    - name: Upload Jacoco report artifact
-      uses: actions/upload-artifact@v5
-      with:
-        name: jacoco-report
-        path: target/site/jacoco/jacoco.xml
-  
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          token: ${{ secrets.PAT_TOKEN }}
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 25
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+      - name: Upload Jacoco report artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/jacoco.xml
+
+  # Report job
+  # Will be only executed if CODACY_PROJECT_TOKEN is set
   report:
     runs-on: ubuntu-latest
     needs: build
+    if: ${{ needs.verify.outputs.skip_report_status == 'false' }}
     steps:
-    - uses: actions/checkout@v5
-    - name: Download Jacoco report artifact
-      uses: actions/download-artifact@v6
-      with:
-        name: jacoco-report
-        path: target/site/jacoco
-    - name: Send coverage to Codacy
-      uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
-      with:
-        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+      - uses: actions/checkout@v5
+      - name: Download Jacoco report artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: jacoco-report
+          path: target/site/jacoco
+      - name: Send coverage to Codacy
+        uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
+        with:
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
