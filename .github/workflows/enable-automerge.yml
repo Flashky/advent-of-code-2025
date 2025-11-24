@@ -1,9 +1,14 @@
-name: Dependabot Auto-Merge
+name: Dependabot - Enable Auto-Merge
 
 # Dependabot Pull Requests Auto-Merge
 
-# The auto-merge will be performed only if the semantic version for the changes is MINOR or PATCH.
+# This workflow does not execute the merge itself. Instead, it serves as a filter that enables GitHub's native Automatic Merging feature when conditions are met.
+
+# The auto-merge will be enabled only if the semantic version for the changes is MINOR or PATCH.
 # Pull Requests with semantic versions MAJOR will need manual review and approval.
+
+# Once the version filter has enabled Auto-Merge, the Pull Request will enter a waiting state until all required checks defined in the master Branch Protection Rules are passed.
+# The secured process is: Safe Version → Enable Auto-Merge → Wait for CI Tests → Automatic Merge.
 
 on:
   pull_request:
@@ -19,16 +24,14 @@ jobs:
     if: github.actor == 'dependabot[bot]'
     
     steps:
+    
       - name: Obtain Dependabot Metadata
         id: metadata
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      # Este paso maneja AMBOS casos (pom.xml y workflows) automáticamente.
-      # fetch-metadata analiza el cambio de versión (SemVer), no el tipo de archivo.
       - name: Enable Auto-Merge
-        # Solo Minor y Patch
         if: ${{ steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch' }}
         run: gh pr merge --auto --squash "$PR_URL"
         env:
