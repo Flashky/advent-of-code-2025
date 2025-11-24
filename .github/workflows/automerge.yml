@@ -16,11 +16,10 @@ permissions:
 jobs:
   dependabot-automerge:
     runs-on: ubuntu-latest
-    # Solo si es Dependabot
     if: github.actor == 'dependabot[bot]'
     
     steps:
-      - name: Metadata de Dependabot
+      - name: Obtain Dependabot Metadata
         id: metadata
         uses: dependabot/fetch-metadata@v2
         with:
@@ -28,7 +27,7 @@ jobs:
 
       # Este paso maneja AMBOS casos (pom.xml y workflows) automáticamente.
       # fetch-metadata analiza el cambio de versión (SemVer), no el tipo de archivo.
-      - name: Activar Auto-Merge
+      - name: Enable Auto-Merge
         # Solo Minor y Patch
         if: ${{ steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch' }}
         run: gh pr merge --auto --squash "$PR_URL"
