@@ -6,10 +6,8 @@ name: Dependabot Auto-Merge
 # Pull Requests with semantic versions MAJOR will need manual review and approval.
 
 on:
-  workflow_run:
-    workflows: ["Build & Report"]
-    types:
-      - completed
+  pull_request:
+    branches: ["master", "main"] 
 
 permissions:
   contents: write
@@ -18,29 +16,22 @@ permissions:
 jobs:
   dependabot-automerge:
     runs-on: ubuntu-latest
-    # CONDICIONES DE SEGURIDAD:
-    # 1. El workflow de Java debe haber terminado en 'success' (Verde)
-    # 2. El actor que disparó el evento original debe ser Dependabot
-    if: >
-      github.event.workflow_run.conclusion == 'success' &&
-      github.event.workflow_run.actor.login == 'dependabot[bot]'
-
+    # Solo si es Dependabot
+    if: github.actor == 'dependabot[bot]'
+    
     steps:
-      # Necesitamos hacer checkout para leer la metadata de dependabot
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_branch }}
-
-      - name: Obtain Dependabot Metadata
+      - name: Metadata de Dependabot
         id: metadata
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Merge
+      # Este paso maneja AMBOS casos (pom.xml y workflows) automáticamente.
+      # fetch-metadata analiza el cambio de versión (SemVer), no el tipo de archivo.
+      - name: Activar Auto-Merge
+        # Solo Minor y Patch
         if: ${{ steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch' }}
-        run: gh pr merge --squash "$PR_URL"
+        run: gh pr merge --auto --squash "$PR_URL"
         env:
-          PR_URL: ${{ github.event.workflow_run.pull_requests[0].html_url }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
