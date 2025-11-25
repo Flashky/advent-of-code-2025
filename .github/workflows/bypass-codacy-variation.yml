@@ -1,0 +1,60 @@
+name: Bypass Codacy Coverage Variation
+
+# This workflow injects a success check on 'Codacy Coverage Variation' when the check is not reported by Codacy,
+# so it can avoid bloking auto-merging on Pull Requests that has a check success requirement on it.
+
+# Examples where 'Codacy Coverage Variation' is not reported by Codacy:
+# - Modification on just a test class, and your test classes are ignored at 'codacy.yml'.
+# - Modification of 'README.md', which has no coverage.
+# - Modification of a GitHub Action workflow, which has no coverage.
+
+# In those cases, this workflow will bypass the 'Codacy Coverage Variation' check, allowing the PR to auto-merge.
+
+on:
+  pull_request:
+    branches: [ "master", "main" ]
+
+permissions:
+  checks: write
+  contents: read
+
+jobs:
+  bypass_check:
+    runs-on: ubuntu-latest
+    steps:
+
+      # Verifies which kind of files have changes.
+      # 'has_code_changes' will be true if any java source file is modified.
+      # 'has_non_coverable_changes' will be true if there is any Markdown, YAML file or any other kind of non coverable file.
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        id: changes
+        with:
+          filters: | 
+            has_code_changes:
+              - "src/main/**/*.java"
+            has_non_coverable_changes:
+              - "**/*.md"
+              - "**/*.yml"
+              - ".github/**"
+            
+      # Bypass the 'Codacy Coverage Variation' when there are no coverable files able to trigger it.
+      - name: Create Success Check for Variation
+        if: steps.changes.outputs.has_code_changes == 'false' && steps.changes.outputs.has_non_coverable_changes == 'true'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        with:
+          script: |
+            const checkName = 'Codacy Coverage Variation';
+            console.log(`Reporting manual success for: ${checkName}`);
+            
+            await github.rest.checks.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              name: checkName,
+              head_sha: context.payload.pull_request.head.sha,
+              status: 'completed',
+              conclusion: 'success',
+              output: {
+                title: 'Skipped by Dynamic Exclusion',
+                summary: 'There are no coverable files. Bypass Codacy Coverage Variation success check.'
+              }
+            });
