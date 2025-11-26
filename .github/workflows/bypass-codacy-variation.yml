@@ -40,7 +40,7 @@ jobs:
       # Bypass the 'Codacy Coverage Variation' when there are no coverable files able to trigger it.
       - name: Create Success Check for Variation
         if: steps.changes.outputs.has_code_changes == 'false' && steps.changes.outputs.has_non_coverable_changes == 'true'
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
             const checkName = 'Codacy Coverage Variation';
