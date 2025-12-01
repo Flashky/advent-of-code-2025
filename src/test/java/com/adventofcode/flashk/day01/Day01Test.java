@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_01)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day01Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_01;
@@ -36,7 +35,10 @@ class Day01Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        SecretEntrance secretEntrance = new SecretEntrance(inputs);
+        long result = secretEntrance.solveA();
+
+		assertEquals(3L,result);
 		
 	}
 
@@ -50,8 +52,10 @@ class Day01Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        SecretEntrance secretEntrance = new SecretEntrance(inputs);
+        long result = secretEntrance.solveA();
+
+		assertEquals(964L,result);
 
 	}
 
@@ -65,7 +69,10 @@ class Day01Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        SecretEntrance secretEntrance = new SecretEntrance(inputs);
+        long result = secretEntrance.solveB();
+
+		assertEquals(6L,result);
 	}
 
 	@Test
@@ -78,8 +85,10 @@ class Day01Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        SecretEntrance secretEntrance = new SecretEntrance(inputs);
+        long result = secretEntrance.solveB();
+
+		assertEquals(5872L,result);
 
 	}
 
