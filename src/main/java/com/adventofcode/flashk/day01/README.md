@@ -1,3 +1,3 @@
-# Day 1: 
+# Day 1: Secret Entrance
 
 [https://adventofcode.com/2025/day/1](https://adventofcode.com/2025/day/1)

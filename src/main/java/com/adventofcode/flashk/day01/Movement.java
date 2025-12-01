@@ -1,11 +1,9 @@
 package com.adventofcode.flashk.day01;
 
-import static java.lang.IO.println;
 
 import module java.base;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.math3.analysis.function.Max;
 
 @Getter
 @Setter
@@ -14,8 +12,8 @@ public class Movement {
     private static final int MIN = 0;
     private static final int MAX = 99;
 
-    private short direction;
-    private int amount;
+    private final short direction;
+    private final int amount;
     private int clicks;
 
     public Movement(String instruction) {
