@@ -1,6 +1,7 @@
 package com.adventofcode.flashk.day02;
 
 import module java.base;
+import com.adventofcode.flashk.common.Partitions;
 import lombok.Getter;
 
 @Getter
@@ -50,7 +51,7 @@ public class Range {
         while(!isInvalid && partitionSize <= maxPartitionSize) {
 
             // Create the partitions
-            List<String> partitions = createPartition(numberStr, partitionSize);
+            List<String> partitions = Partitions.fromString(numberStr, partitionSize);
 
             // Verify how many matches are in the partitions
             // If all the partitions contains the same number, the number is invalid.
@@ -64,27 +65,6 @@ public class Range {
             partitionSize++;
         }
         return isInvalid;
-    }
-
-    private List<String> createPartition(String number, int partitionSize) {
-        List<String> partitions = new ArrayList<>();
-
-        for(int i = 0; i < number.length(); i = i+partitionSize) {
-
-            int endIndex = i+partitionSize;
-
-            String partition;
-            if(endIndex <= number.length()) {
-                partition = number.substring(i, endIndex);
-            } else {
-                partition = number.substring(i);
-            }
-
-            partitions.add(partition);
-
-        }
-
-        return partitions;
     }
 
 }
