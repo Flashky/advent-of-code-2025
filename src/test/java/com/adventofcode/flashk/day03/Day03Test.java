@@ -36,7 +36,10 @@ class Day03Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Lobby lobby = new Lobby(inputs);
+        long result = lobby.solveA();
+
+		assertEquals(357L,result);
 	}
 
 	@Test
@@ -49,8 +52,10 @@ class Day03Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        Lobby lobby = new Lobby(inputs);
+        long result = lobby.solveA();
+
+		assertEquals(17405L,result);
 
 	}
 
@@ -64,7 +69,10 @@ class Day03Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Lobby lobby = new Lobby(inputs);
+        long result = lobby.solveB();
+
+		assertEquals(3121910778619L,0L);
 	}
 
 	@Test
