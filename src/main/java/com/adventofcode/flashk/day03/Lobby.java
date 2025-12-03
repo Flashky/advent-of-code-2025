@@ -29,23 +29,21 @@ public class Lobby {
             return StringUtils.EMPTY;
         }
 
+        // Find the first highest number and its index
         int number = 9;
-        boolean found = false;
         int foundIndex = -1;
         int foundNumber = -1;
 
-        while(!found) {
+        while(foundIndex == -1) {
             int index = bank.indexOf(String.valueOf(number));
             if(index != -1) {
-                found = true;
                 foundIndex = index;
                 foundNumber = number;
-            } else {
-                number--;
             }
+            number--;
         }
 
-        StringBuilder result = new StringBuilder();
+        // Search digits at the right of current item
         String right = bank.substring(foundIndex+1);
         String rightNumber = search(foundDigits+1, right);
 
