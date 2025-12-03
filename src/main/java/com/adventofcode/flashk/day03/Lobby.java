@@ -51,8 +51,8 @@ public class Lobby {
 
         String partialResult = foundNumber + rightNumber;
 
+        // When there are not enough digits at the right, search them at the left.
         if(foundDigits + partialResult.length() < maxDigits) {
-            // Mirar a la izquierda
             String left = bank.substring(0, foundIndex);
             String leftNumber = search(foundDigits+partialResult.length(), left);
             partialResult = leftNumber + partialResult;
