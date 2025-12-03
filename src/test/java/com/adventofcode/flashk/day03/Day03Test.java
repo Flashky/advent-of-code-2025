@@ -35,6 +35,7 @@ class Day03Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
+        //Lobby lobby = new Lobby(inputs);
         Lobby lobby = new Lobby(inputs);
         long result = lobby.solve(2);
 
@@ -51,6 +52,7 @@ class Day03Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
+        //Lobby lobby = new Lobby(inputs);
         Lobby lobby = new Lobby(inputs);
         long result = lobby.solve(2);
 
@@ -74,8 +76,50 @@ class Day03Test {
 		assertEquals(3121910778619L,result);
 	}
 
+    @Test
+    @Order(4)
+    @Tag(TestTag.PART_2)
+    @Tag(TestTag.DEBUG)
+    @DisplayName(TestDisplayName.PART_2_DEBUG)
+    void part2Debug1Test() {
+
+
+        Lobby lobby = new Lobby(List.of("892"));
+        long result = lobby.solve(2);
+
+        assertEquals(92L,result);
+    }
+
+    @Test
+    @Order(5)
+    @Tag(TestTag.PART_2)
+    @Tag(TestTag.DEBUG)
+    @DisplayName(TestDisplayName.PART_2_DEBUG)
+    void part2Debug2Test() {
+
+
+        Lobby lobby = new Lobby(List.of("234234234234278"));
+        long result = lobby.solve(12);
+
+        assertEquals(434234234278L,result);
+    }
+
+    @Test
+    @Order(6)
+    @Tag(TestTag.PART_2)
+    @Tag(TestTag.DEBUG)
+    @DisplayName(TestDisplayName.PART_2_DEBUG)
+    void part2Debug3Test() {
+
+
+        Lobby lobby = new Lobby(List.of("818181911112111"));
+        long result = lobby.solve(12);
+
+        assertEquals(888911112111L,result);
+    }
+
 	@Test
-	@Order(4)
+	@Order(7)
 	@Tag(TestTag.PART_2)
 	@Tag(TestTag.INPUT)
 	@DisplayName(TestDisplayName.PART_2_INPUT)
@@ -86,6 +130,8 @@ class Day03Test {
         Lobby lobby = new Lobby(inputs);
         long result = lobby.solve(12);
 		println("Solution: "+result);
+
+        // 174186992513469 -> too high
 		assertEquals(0L,0L);
 
 	}

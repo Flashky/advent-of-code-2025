@@ -7,7 +7,7 @@ public class Lobby {
 
     private final List<String> banks;
     private int maxDigits;
-    
+
     public Lobby(List<String> inputs) {
         banks = inputs;
     }
@@ -78,7 +78,7 @@ public class Lobby {
 
     private String search(int foundDigits, String bank, int maxNumber) {
 
-        if(foundDigits == maxDigits) {
+        if(foundDigits == maxDigits || bank.isBlank()) {
             return StringUtils.EMPTY;
         }
 
@@ -99,16 +99,25 @@ public class Lobby {
         }
 
         StringBuilder result = new StringBuilder();
+        String right = bank.substring(foundIndex+1);
+        String left = bank.substring(0, foundIndex);
         if(foundIndex+1 < bank.length()) {
-            String right = bank.substring(foundIndex+1);
+            //String right = bank.substring(foundIndex+1);
             String rightNumber = search(foundDigits+1, right, foundNumber);
             result.append(foundNumber).append(rightNumber);
         } else {
-            String left = bank.substring(0, foundIndex);
+            //String left = bank.substring(0, foundIndex);
             String leftNumber = search(foundDigits+1, left, foundNumber-1);
             result.append(leftNumber).append(foundNumber);
         }
 
+
+        if(foundDigits + result.toString().length() <  maxDigits && !left.isBlank()) {
+            foundDigits += result.toString().length();
+            // Force search to the left to find missing digits
+            String leftNumber = search(foundDigits+1, left, foundNumber-1);
+            result.append(leftNumber).append(foundNumber);
+        }
         return result.toString();
     }
 }
