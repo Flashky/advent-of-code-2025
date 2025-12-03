@@ -5,7 +5,7 @@
 
 - [Day 1 - Secret Entrance](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day01)
 - [Day 2 - Gift Shop](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day02)
-- [Day 3](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day03)
+- [Day 3 - Lobby](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day03)
 - [Day 4](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day04)
 - [Day 5](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day05)
 - [Day 6](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day06)

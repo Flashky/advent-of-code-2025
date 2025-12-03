@@ -2,7 +2,6 @@ package com.adventofcode.flashk.day03;
 
 import module java.base;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -16,12 +15,10 @@ import com.adventofcode.flashk.common.test.constants.TestFolder;
 import com.adventofcode.flashk.common.test.constants.TestTag;
 import com.adventofcode.flashk.common.test.utils.Input;
 
-import static java.lang.IO.println;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_03)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day03Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_03;
@@ -36,7 +33,10 @@ class Day03Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Lobby lobby = new Lobby(inputs);
+        long result = lobby.solve(2);
+
+		assertEquals(357L,result);
 	}
 
 	@Test
@@ -49,8 +49,11 @@ class Day03Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        //Lobby lobby = new Lobby(inputs);
+        Lobby lobby = new Lobby(inputs);
+        long result = lobby.solve(2);
+
+		assertEquals(17405L,result);
 
 	}
 
@@ -64,11 +67,59 @@ class Day03Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Lobby lobby = new Lobby(inputs);
+        long result = lobby.solve(12);
+
+		assertEquals(3121910778619L,result);
 	}
 
+    @Test
+    @Order(4)
+    @Tag(TestTag.PART_2)
+    @Tag(TestTag.DEBUG)
+    @DisplayName(TestDisplayName.PART_2_DEBUG + " (892)")
+    void part2Debug1Test() {
+
+        Lobby lobby = new Lobby(List.of("892"));
+        long result = lobby.solve(2);
+
+        assertEquals(92L,result);
+    }
+
+    @Test
+    @Order(5)
+    @Tag(TestTag.PART_2)
+    @Tag(TestTag.DEBUG)
+    @DisplayName(TestDisplayName.PART_2_DEBUG + " (234234234234278)")
+    void part2Debug2Test() {
+
+
+        Lobby lobby = new Lobby(List.of("234234234234278"));
+        long result = lobby.solve(12);
+
+        assertEquals(434234234278L,result);
+    }
+
+    @Test
+    @Order(6)
+    @Tag(TestTag.PART_2)
+    @Tag(TestTag.DEBUG)
+    @DisplayName(TestDisplayName.PART_2_DEBUG + " (818181911112111)")
+    void part2Debug3Test() {
+
+
+        Lobby lobby = new Lobby(List.of("818181911112111"));
+        assertEquals(9L, lobby.solve(1));
+        assertEquals(92L, lobby.solve(2));
+        assertEquals(921L, lobby.solve(3));
+        assertEquals(9211L, lobby.solve(4));
+        assertEquals(92111L, lobby.solve(5));
+        assertEquals(912111L, lobby.solve(6));
+        assertEquals(888911112111L, lobby.solve(12));
+    }
+
 	@Test
-	@Order(4)
+	@Order(7)
 	@Tag(TestTag.PART_2)
 	@Tag(TestTag.INPUT)
 	@DisplayName(TestDisplayName.PART_2_INPUT)
@@ -77,8 +128,10 @@ class Day03Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        Lobby lobby = new Lobby(inputs);
+        long result = lobby.solve(12);
+
+		assertEquals(171990312704598L,result);
 
 	}
 
