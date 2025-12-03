@@ -35,7 +35,6 @@ class Day03Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-        //Lobby lobby = new Lobby(inputs);
         Lobby lobby = new Lobby(inputs);
         long result = lobby.solve(2);
 
@@ -82,7 +81,6 @@ class Day03Test {
     @Tag(TestTag.DEBUG)
     @DisplayName(TestDisplayName.PART_2_DEBUG + " (892)")
     void part2Debug1Test() {
-
 
         Lobby lobby = new Lobby(List.of("892"));
         long result = lobby.solve(2);
@@ -135,7 +133,6 @@ class Day03Test {
         Lobby lobby = new Lobby(inputs);
         long result = lobby.solve(12);
 
-        // 174186992513469 -> too high
 		assertEquals(171990312704598L,result);
 
 	}
