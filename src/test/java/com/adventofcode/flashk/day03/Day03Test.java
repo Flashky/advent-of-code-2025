@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_03)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day03Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_03;
@@ -37,7 +36,7 @@ class Day03Test {
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
         Lobby lobby = new Lobby(inputs);
-        long result = lobby.solveA();
+        long result = lobby.solve(2);
 
 		assertEquals(357L,result);
 	}
@@ -53,7 +52,7 @@ class Day03Test {
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
         Lobby lobby = new Lobby(inputs);
-        long result = lobby.solveA();
+        long result = lobby.solve(2);
 
 		assertEquals(17405L,result);
 
@@ -70,9 +69,9 @@ class Day03Test {
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
         Lobby lobby = new Lobby(inputs);
-        long result = lobby.solveB();
+        long result = lobby.solve(12);
 
-		assertEquals(3121910778619L,0L);
+		assertEquals(3121910778619L,result);
 	}
 
 	@Test
@@ -84,8 +83,9 @@ class Day03Test {
 
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
-
-		println("Solution: ");
+        Lobby lobby = new Lobby(inputs);
+        long result = lobby.solve(12);
+		println("Solution: "+result);
 		assertEquals(0L,0L);
 
 	}
