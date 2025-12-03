@@ -17,19 +17,6 @@ public final class TestDisplayName {
 	public static final String DAY_10 = "Day 10";
 	public static final String DAY_11 = "Day 11";
 	public static final String DAY_12 = "Day 12";
-	public static final String DAY_13 = "Day 13";
-	public static final String DAY_14 = "Day 14";
-	public static final String DAY_15 = "Day 15";
-	public static final String DAY_16 = "Day 16";
-	public static final String DAY_17 = "Day 17";
-	public static final String DAY_18 = "Day 18";
-	public static final String DAY_19 = "Day 19";
-	public static final String DAY_20 = "Day 20";
-	public static final String DAY_21 = "Day 21";
-	public static final String DAY_22 = "Day 22";
-	public static final String DAY_23 = "Day 23";
-	public static final String DAY_24 = "Day 24";
-	public static final String DAY_25 = "Day 25";
 	
 	// Test display names
 	public static final String PART_1_SAMPLE = "Part 1 - Sample";

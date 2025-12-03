@@ -72,17 +72,17 @@ public class Lobby {
     }
 
     private long largestJoltageRecursive(String bank) {
-        String result = search(0,bank,9);
+        String result = search(0,bank);
         return Long.parseLong(result);
     }
 
-    private String search(int foundDigits, String bank, int maxNumber) {
+    private String search(int foundDigits, String bank) {
 
         if(foundDigits == maxDigits || bank.isBlank()) {
             return StringUtils.EMPTY;
         }
 
-        int number = maxNumber;
+        int number = 9;
         boolean found = false;
         int foundIndex = -1;
         int foundNumber = -1;
@@ -100,14 +100,29 @@ public class Lobby {
 
         StringBuilder result = new StringBuilder();
         String right = bank.substring(foundIndex+1);
+        String rightNumber = search(foundDigits+1, right);
+
+        String partialResult = foundNumber + rightNumber;
+
+        if(foundDigits + partialResult.length() < maxDigits) {
+            // Mirar a la izquierda
+            String left = bank.substring(0, foundIndex);
+            String leftNumber = search(foundDigits+partialResult.length(), left);
+            partialResult = leftNumber + partialResult;
+        }
+
+        // Si el partialResult no tiene la longitud adecuada, miramos a la izquierda.
+
+        /*
         String left = bank.substring(0, foundIndex);
+
         if(foundIndex+1 < bank.length()) {
             //String right = bank.substring(foundIndex+1);
-            String rightNumber = search(foundDigits+1, right, foundNumber);
+            String rightNumber = search(foundDigits+1, right);
             result.append(foundNumber).append(rightNumber);
         } else {
             //String left = bank.substring(0, foundIndex);
-            String leftNumber = search(foundDigits+1, left, foundNumber-1);
+            String leftNumber = search(foundDigits+1, left);
             result.append(leftNumber).append(foundNumber);
         }
 
@@ -115,9 +130,25 @@ public class Lobby {
         if(foundDigits + result.toString().length() <  maxDigits && !left.isBlank()) {
             foundDigits += result.toString().length();
             // Force search to the left to find missing digits
-            String leftNumber = search(foundDigits+1, left, foundNumber-1);
+            String leftNumber = search(foundDigits+1, left);
             result.append(leftNumber).append(foundNumber);
         }
-        return result.toString();
+
+*/
+
+        /*
+        String rightNumber = search(foundDigits+1, right);
+        long resultRight = Long.parseLong(foundNumber + rightNumber);
+
+        String leftNumber = search(foundDigits+1, left);
+        long resultLeft = Long.parseLong(leftNumber + foundNumber);
+
+        if(resultRight > resultLeft) {
+            result.append(foundNumber).append(rightNumber);
+        } else {
+            result.append(leftNumber).append(foundNumber);
+        }*/
+
+        return partialResult;
     }
 }
