@@ -32,9 +32,12 @@ class Day04Test  {
 	void part1SampleTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
+        long result = printingDepartment.solveA();
+
+		assertEquals(13L,result);
 	}
 
 	@Test
@@ -45,10 +48,12 @@ class Day04Test  {
 	void part1InputTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
+        long result = printingDepartment.solveA();
+
+		assertEquals(1356L,result);
 
 	}
 
@@ -60,9 +65,12 @@ class Day04Test  {
 	void part2SampleTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
+        long result = printingDepartment.solveB();
+
+		assertEquals(43L,result);
 	}
 
 	@Test
@@ -73,10 +81,12 @@ class Day04Test  {
 	void part2InputTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
+        long result = printingDepartment.solveB();
+
+		assertEquals(8713L,result);
 
 	}
 
