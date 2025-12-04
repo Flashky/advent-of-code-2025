@@ -23,22 +23,7 @@ public class PrintingDepartment {
         rows = map[0].length;
     }
 
-    public long solveA() {
-
-        long count = 0;
-
-        for(int row = 0; row < rows; row++) {
-            for(int col = 0; col < cols; col++) {
-                if(canMove(row, col)) {
-                    count++;
-                }
-            }
-        }
-
-        return count;
-    }
-
-    public long solveB() {
+    public long solve(boolean removeRolls) {
 
         long count = 0;
         boolean hasMoved;
@@ -49,8 +34,10 @@ public class PrintingDepartment {
                 for(int col = 0; col < cols; col++) {
                     if(canMove(row, col)) {
                         count++;
-                        map[row][col] = EMPTY;
-                        hasMoved = true;
+                        if(removeRolls) {
+                            map[row][col] = EMPTY;
+                            hasMoved = true;
+                        }
                     }
                 }
             }

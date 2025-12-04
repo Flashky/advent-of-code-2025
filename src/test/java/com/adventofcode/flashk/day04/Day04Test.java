@@ -15,7 +15,6 @@ import com.adventofcode.flashk.common.test.constants.TestFolder;
 import com.adventofcode.flashk.common.test.constants.TestTag;
 import com.adventofcode.flashk.common.test.utils.Input;
 
-import static java.lang.IO.println;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_04)
@@ -35,7 +34,7 @@ class Day04Test  {
         char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
         PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
-        long result = printingDepartment.solveA();
+        long result = printingDepartment.solve(false);
 
 		assertEquals(13L,result);
 	}
@@ -51,7 +50,7 @@ class Day04Test  {
         char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
         PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
-        long result = printingDepartment.solveA();
+        long result = printingDepartment.solve(false);
 
 		assertEquals(1356L,result);
 
@@ -68,7 +67,7 @@ class Day04Test  {
         char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
         PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
-        long result = printingDepartment.solveB();
+        long result = printingDepartment.solve(true);
 
 		assertEquals(43L,result);
 	}
@@ -84,7 +83,7 @@ class Day04Test  {
         char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
         PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
-        long result = printingDepartment.solveB();
+        long result = printingDepartment.solve(true);
 
 		assertEquals(8713L,result);
 
