@@ -8,6 +8,10 @@ public class PrintingDepartment {
     private static final char PAPER_ROLL = '@';
     private static final char EMPTY = '.';
     private static final short MAX_ADJACENT_ROLLS = 4;
+    private final Set<Vector2> directions = Set.of(Vector2.right(), Vector2.left(),
+                                                    Vector2.up(), Vector2.down(),
+                                                    Vector2.upLeft(), Vector2.upRight(),
+                                                    Vector2.downLeft(), Vector2.downRight());
 
     private final char[][] map;
     private final int cols;
@@ -74,43 +78,11 @@ public class PrintingDepartment {
     private Set<Vector2> getAdjacentTiles(Vector2 position) {
         Set<Vector2> adjacentTiles = new HashSet<>();
 
-        Vector2 nextPos = Vector2.transform(position, Vector2.left());
-        if(isInbounds(nextPos)) {
-            adjacentTiles.add(nextPos);
-        }
-
-        nextPos = Vector2.transform(position, Vector2.right());
-        if(isInbounds(nextPos)) {
-            adjacentTiles.add(nextPos);
-        }
-
-        nextPos = Vector2.transform(position, Vector2.up());
-        if(isInbounds(nextPos)) {
-            adjacentTiles.add(nextPos);
-        }
-
-        nextPos = Vector2.transform(position, Vector2.down());
-        if(isInbounds(nextPos)) {
-            adjacentTiles.add(nextPos);
-        }
-
-        nextPos = Vector2.transform(position, Vector2.downLeft());
-        if(isInbounds(nextPos)) {
-            adjacentTiles.add(nextPos);
-        }
-
-        nextPos = Vector2.transform(position, Vector2.downRight());
-        if(isInbounds(nextPos)) {
-            adjacentTiles.add(nextPos);
-        }
-
-        nextPos = Vector2.transform(position, Vector2.upLeft());
-        if(isInbounds(nextPos)) {
-            adjacentTiles.add(nextPos);
-        }
-        nextPos = Vector2.transform(position, Vector2.upRight());
-        if(isInbounds(nextPos)) {
-            adjacentTiles.add(nextPos);
+        for(Vector2 direction : directions) {
+            Vector2 nextPos = Vector2.transform(position, direction);
+            if(isInbounds(nextPos)){
+                adjacentTiles.add(nextPos);
+            }
         }
 
         return adjacentTiles;
