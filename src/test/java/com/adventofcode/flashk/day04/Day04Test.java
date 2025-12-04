@@ -2,7 +2,6 @@ package com.adventofcode.flashk.day04;
 
 import module java.base;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -16,12 +15,10 @@ import com.adventofcode.flashk.common.test.constants.TestFolder;
 import com.adventofcode.flashk.common.test.constants.TestTag;
 import com.adventofcode.flashk.common.test.utils.Input;
 
-import static java.lang.IO.println;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_04)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day04Test  {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_04;
@@ -34,9 +31,12 @@ class Day04Test  {
 	void part1SampleTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
+        long result = printingDepartment.solve(false);
+
+		assertEquals(13L,result);
 	}
 
 	@Test
@@ -47,10 +47,12 @@ class Day04Test  {
 	void part1InputTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
+        long result = printingDepartment.solve(false);
+
+		assertEquals(1356L,result);
 
 	}
 
@@ -62,9 +64,12 @@ class Day04Test  {
 	void part2SampleTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
+        long result = printingDepartment.solve(true);
+
+		assertEquals(43L,result);
 	}
 
 	@Test
@@ -75,10 +80,12 @@ class Day04Test  {
 	void part2InputTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        PrintingDepartment printingDepartment = new PrintingDepartment(inputs);
+        long result = printingDepartment.solve(true);
+
+		assertEquals(8713L,result);
 
 	}
 
