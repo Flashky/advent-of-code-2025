@@ -1,7 +1,5 @@
 package com.adventofcode.flashk.day05;
 
-import static java.lang.IO.println;
-
 import module java.base;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,10 +21,7 @@ public class Cafeteria {
         }
 
         // Ingredients
-        ingredients = inputs.stream()
-                .skip(i)
-                .map(Long::parseLong)
-                .toList();
+        ingredients = inputs.stream().skip(i).map(Long::parseLong).toList();
     }
 
     public long solveA() {
@@ -45,12 +40,16 @@ public class Cafeteria {
 
     public long solveB() {
 
+        // Take range 1 and reduce ranges 2..N
+        // Take range 2 and reduce ranges 3..N
+        // Take range N-1 and reduce range N
 
         for(int i = 0; i < ranges.size(); i++) {
             Range range = ranges.get(i);
             for(int j = i+1; j < ranges.size(); j++) {
                 Range otherRange = ranges.get(j);
 
+                // A range might become invalid if is completely overlapped by other, compare only between valid ranges.
                 if(otherRange.isValid()) {
                     otherRange.reduce(range);
                 }
@@ -61,11 +60,6 @@ public class Cafeteria {
 
             }
         }
-
-        // Coge rango 1 y resta a rangos 2..N
-        // Coge rango 2 y resta a rangos 3..N
-        // Coge rango N-1 y resta a rango N
-        // Ahora en cada rango solo estarán los números sin repetir
 
         return ranges.stream().mapToLong(Range::getIngredientsCount).sum();
     }
