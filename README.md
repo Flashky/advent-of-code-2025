@@ -7,7 +7,7 @@
 - [Day 2 - Gift Shop](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day02)
 - [Day 3 - Lobby](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day03)
 - [Day 4 - Printing Department](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day04)
-- [Day 5](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day05)
+- [Day 5 - Cafeteria](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day05)
 - [Day 6](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day06)
 - [Day 7](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day07)
 - [Day 8](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day08)
