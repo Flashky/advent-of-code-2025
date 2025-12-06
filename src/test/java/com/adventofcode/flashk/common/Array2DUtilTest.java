@@ -24,4 +24,22 @@ class Array2DUtilTest {
         Array2DUtil.paint(array);
         assertArrayEquals(expected, actual);
     }
+
+    @Test
+    void transposeOddTest() {
+        char[][] array = {
+                {'a', 'b', 'c'},
+                {'d', 'e', 'f'}
+        };
+
+        char[][] expected = {
+                {'a', 'd'},
+                {'b', 'e'},
+                {'c', 'f'}
+        };
+
+        char[][] actual = Array2DUtil.transpose(array);
+        Array2DUtil.paint(array);
+        assertArrayEquals(expected, actual);
+    }
 }

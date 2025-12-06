@@ -2,7 +2,6 @@ package com.adventofcode.flashk.day06;
 
 import module java.base;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -21,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_06)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day06Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_06;
@@ -36,7 +34,10 @@ class Day06Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        TrashCompactor trashCompactor = new TrashCompactor(inputs);
+        long result = trashCompactor.solveA();
+
+		assertEquals(4277556L, result);
 	}
 
 	@Test
@@ -49,8 +50,10 @@ class Day06Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        TrashCompactor trashCompactor = new TrashCompactor(inputs);
+        long result = trashCompactor.solveA();
+
+		assertEquals(6209956042374L, result);
 
 	}
 
@@ -62,9 +65,12 @@ class Day06Test {
 	void part2SampleTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
+        List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        TrashCompactorRTL trashCompactorRTL = new TrashCompactorRTL(inputs);
+        long result = trashCompactorRTL.solve();
+
+		assertEquals(3263827L, result);
 	}
 
 	@Test
@@ -77,8 +83,10 @@ class Day06Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        TrashCompactorRTL trashCompactorRTL = new TrashCompactorRTL(inputs);
+        long result = trashCompactorRTL.solve();
+
+		assertEquals(12608160008022L,result);
 
 	}
 
