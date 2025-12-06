@@ -15,7 +15,6 @@ import com.adventofcode.flashk.common.test.constants.TestFolder;
 import com.adventofcode.flashk.common.test.constants.TestTag;
 import com.adventofcode.flashk.common.test.utils.Input;
 
-import static java.lang.IO.println;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_06)
@@ -34,8 +33,8 @@ class Day06Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-        TrashCompactor trashCompactor = new TrashCompactor(inputs);
-        long result = trashCompactor.solveA();
+        TrashCompactor trashCompactor = new TrashCompactorNormal(inputs);
+        long result = trashCompactor.solve();
 
 		assertEquals(4277556L, result);
 	}
@@ -50,8 +49,8 @@ class Day06Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-        TrashCompactor trashCompactor = new TrashCompactor(inputs);
-        long result = trashCompactor.solveA();
+        TrashCompactor trashCompactor = new TrashCompactorNormal(inputs);
+        long result = trashCompactor.solve();
 
 		assertEquals(6209956042374L, result);
 
@@ -67,7 +66,7 @@ class Day06Test {
 		// Read input file
         List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-        TrashCompactorRTL trashCompactorRTL = new TrashCompactorRTL(inputs);
+        TrashCompactor trashCompactorRTL = new TrashCompactorRTL(inputs);
         long result = trashCompactorRTL.solve();
 
 		assertEquals(3263827L, result);
@@ -83,7 +82,7 @@ class Day06Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-        TrashCompactorRTL trashCompactorRTL = new TrashCompactorRTL(inputs);
+        TrashCompactor trashCompactorRTL = new TrashCompactorRTL(inputs);
         long result = trashCompactorRTL.solve();
 
 		assertEquals(12608160008022L,result);
