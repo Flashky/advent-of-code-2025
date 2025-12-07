@@ -9,7 +9,7 @@
 - [Day 4 - Printing Department](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day04)
 - [Day 5 - Cafeteria](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day05)
 - [Day 6 - Trash Compactor](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day06)
-- [Day 7](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day07)
+- [Day 7 - Laboratories](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day07)
 - [Day 8](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day08)
 - [Day 9](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day09)
 - [Day 10](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day10)

@@ -2,7 +2,6 @@ package com.adventofcode.flashk.day07;
 
 import module java.base;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -22,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_07)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day07Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_07;
@@ -35,9 +33,12 @@ class Day07Test {
 	void part1SampleTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
+		char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Laboratories laboratories = new Laboratories(inputs);
+        long result = laboratories.solveA();
+
+		assertEquals(21L,result);
 	}
 
 	@Test
@@ -48,10 +49,13 @@ class Day07Test {
 	void part1InputTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        Laboratories laboratories = new Laboratories(inputs);
+        long result = laboratories.solveA();
+
+		println("Solution: "+result);
+		assertEquals(1594L,result);
 
 	}
 
@@ -63,9 +67,12 @@ class Day07Test {
 	void part2SampleTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Laboratories laboratories = new Laboratories(inputs);
+        long result = laboratories.solveB();
+
+		assertEquals(40L,result);
 	}
 
 	@Test
@@ -76,10 +83,12 @@ class Day07Test {
 	void part2InputTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
+        char[][] inputs = Input.read2DCharArray(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        Laboratories laboratories = new Laboratories(inputs);
+        long result = laboratories.solveB();
+
+		assertEquals(15650261281478L,result);
 
 	}
 

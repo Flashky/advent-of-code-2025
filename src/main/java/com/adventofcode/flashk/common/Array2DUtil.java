@@ -1,5 +1,7 @@
 package com.adventofcode.flashk.common;
 
+import java.util.Arrays;
+
 import static java.lang.IO.println;
 
 public class Array2DUtil {
@@ -27,7 +29,7 @@ public class Array2DUtil {
 
         println();
         for (char[] chars : map) {
-            println(chars);
+            println(Arrays.toString(chars));
         }
         println();
 
