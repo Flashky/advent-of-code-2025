@@ -7,13 +7,16 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 
 public class Playground {
-
-    private final List<JunctionBox> junctionBoxes = new ArrayList<>();
+    
     private final Map<Long,Graph<JunctionBox, DefaultEdge>> graphsPerId = new HashMap<>();
+    private final List<CircuitPair> circuitPairs = new ArrayList<>();
 
     public Playground(List<String> inputs) {
 
         long circuitId = 1;
+        List<JunctionBox> junctionBoxes = new ArrayList<>();
+
+        // Initialize graphs and boxes
         for(String input : inputs) {
             JunctionBox junctionBox = new JunctionBox(input);
 
@@ -25,19 +28,17 @@ public class Playground {
             junctionBoxes.add(junctionBox);
         }
 
-    }
-
-    public long solveA(long maxConnections) {
-
-        // Find all distances between any pair of junction boxes
-        List<CircuitPair> circuitPairs = new ArrayList<>();
-
+        // Initialize circuit pairs
         for(int i = 0; i < junctionBoxes.size(); i++){
             for(int j = i+1; j < junctionBoxes.size(); j++) {
                 CircuitPair circuitPair = new CircuitPair(junctionBoxes.get(i), junctionBoxes.get(j));
                 circuitPairs.add(circuitPair);
             }
         }
+
+    }
+
+    public long solveA(long maxConnections) {
 
         // Make the shortest N connections
         circuitPairs.stream().sorted().limit(maxConnections).forEach(this::connect);
@@ -54,16 +55,6 @@ public class Playground {
     }
 
     public long solveB() {
-
-        // Find all distances between any pair of junction boxes
-        List<CircuitPair> circuitPairs = new ArrayList<>();
-
-        for(int i = 0; i < junctionBoxes.size(); i++){
-            for(int j = i+1; j < junctionBoxes.size(); j++) {
-                CircuitPair circuitPair = new CircuitPair(junctionBoxes.get(i), junctionBoxes.get(j));
-                circuitPairs.add(circuitPair);
-            }
-        }
 
         // Make all the connections
         List<CircuitPair> sortedCircuits = circuitPairs.stream().sorted().toList();
@@ -82,7 +73,7 @@ public class Playground {
 
     }
 
-    
+
     private void connect(CircuitPair circuitPair) {
 
         JunctionBox firstBox = circuitPair.getFirst();
