@@ -2,7 +2,6 @@ package com.adventofcode.flashk.day08;
 
 import module java.base;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -16,12 +15,10 @@ import com.adventofcode.flashk.common.test.constants.TestFolder;
 import com.adventofcode.flashk.common.test.constants.TestTag;
 import com.adventofcode.flashk.common.test.utils.Input;
 
-import static java.lang.IO.println;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_08)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day08Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_08;
@@ -36,7 +33,10 @@ class Day08Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Playground playground = new Playground(inputs);
+        long result = playground.solveA(10);
+
+		assertEquals(40L,result);
 	}
 
 	@Test
@@ -48,9 +48,10 @@ class Day08Test {
 
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
+        Playground playground = new Playground(inputs);
+        long result = playground.solveA(1000);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+		assertEquals(175440L,result);
 
 	}
 
@@ -64,7 +65,10 @@ class Day08Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Playground playground = new Playground(inputs);
+        long result = playground.solveB();
+
+		assertEquals(25272L,result);
 	}
 
 	@Test
@@ -77,8 +81,10 @@ class Day08Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        Playground playground = new Playground(inputs);
+        long result = playground.solveB();
+
+		assertEquals(3200955921L,result);
 
 	}
 

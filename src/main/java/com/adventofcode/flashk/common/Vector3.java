@@ -51,6 +51,15 @@ public class Vector3 {
 		
 		return new Vector3(x,y,z);
 	}
+
+    public static double distance(Vector3 a, Vector3 b) {
+
+        int xDiff = b.x - a.x;
+        int yDiff = b.y - a.y;
+        int zDiff = b.z - a.z;
+
+        return Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2) + Math.pow(zDiff,2));
+    }
 	
 	/// Shorthand for `Vector3(-1,0,0)`.
     /// @return A unitary vector that points to the left.
