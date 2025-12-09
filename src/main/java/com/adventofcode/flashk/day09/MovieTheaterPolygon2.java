@@ -170,9 +170,10 @@ public class MovieTheaterPolygon2 {
         for(Vector2 point : rectanglePoints) {
 
             if(inPolygon.containsKey(point)) {
-                if(!inPolygon.get(point)) {
-                    return false;
+                if(inPolygon.get(point)) {
+                    continue;
                 }
+                return false;
             }
 
             // use winding number algorithm to check if every point is inside the original polygon
