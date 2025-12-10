@@ -43,9 +43,7 @@ public class MovieTheaterPolygon2 {
             for (int j = i + 1; j < redTiles.size(); j++) {
                 Vector2 secondCorner = redTiles.get(j);
                 long area = calculateArea(firstCorner, secondCorner);
-                if (area > result) {
-                    result = area;
-                }
+                result = Math.max(area, result);
             }
         }
 
