@@ -62,7 +62,7 @@ public class MovieTheaterPolygon2 {
                 long area = calculateArea(firstCorner, secondCorner);
 
                 // Skip heavier calculations if the rectangle area is not going to be better than the optimal solution
-                if(area <= result) {
+                if(result > area) {
                     continue;
                 }
 
@@ -87,8 +87,8 @@ public class MovieTheaterPolygon2 {
     private Set<Vector2> generateEdgePoints(Vector2 firstPoint, Vector2 secondPoint) {
 
         Set<Vector2> edgePoints = new HashSet<>();
-        edgePoints.add(firstPoint);
-        edgePoints.add(secondPoint);
+        //edgePoints.add(firstPoint);
+        //edgePoints.add(secondPoint);
 
         if(firstPoint.getX() == secondPoint.getX()) {
 
@@ -97,20 +97,22 @@ public class MovieTheaterPolygon2 {
             int maxY = Math.max(firstPoint.getY(), secondPoint.getY());
 
             // Add all edge points
-            for(int y = minY+1; y < maxY; y++) {
+            for(int y = minY; y <= maxY; y++) {
                 edgePoints.add(new Vector2(firstPoint.getX(), y));
             }
 
-        } else {
+        } else if(firstPoint.getY() == secondPoint.getY()){
 
             // Same horizontal
             int minX = Math.min(firstPoint.getX(), secondPoint.getX());
             int maxX = Math.max(firstPoint.getX(), secondPoint.getX());
 
             // Add all edge points
-            for(int x = minX+1; x < maxX; x++) {
+            for(int x = minX; x <= maxX; x++) {
                 edgePoints.add(new Vector2(x, firstPoint.getY()));
             }
+        } else {
+            throw new IllegalStateException("This shouldn't happen...");
         }
         return edgePoints;
     }
