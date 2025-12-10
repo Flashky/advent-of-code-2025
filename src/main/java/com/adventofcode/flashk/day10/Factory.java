@@ -15,6 +15,6 @@ public class Factory {
     }
 
     public long solveB() {
-        return machines.stream().map(Machine::findMinimumPressesJoltage).mapToLong(Long::longValue).sum();
+        return machines.stream().map(Machine::findMinimumPressesJoltageRecursive).mapToLong(Long::longValue).sum();
     }
 }

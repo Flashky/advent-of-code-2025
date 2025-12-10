@@ -13,7 +13,7 @@ public class Machine {
     private final boolean[] expectedLights;
     private final List<Button> buttons = new ArrayList<>();
     private final List<Integer> joltages = new ArrayList<>();
-
+    private final int[] expectedJoltages;
     public Machine(String input) {
 
         String[] splittedInput = input.split(" ");
@@ -41,6 +41,8 @@ public class Machine {
                 joltages.add(Integer.parseInt(number));
             }
         }
+
+        expectedJoltages = joltages.stream().mapToInt(Integer::intValue).toArray();
     }
 
     public long findMinimumPressesLight() {
@@ -94,9 +96,91 @@ public class Machine {
     }
 
     public long findMinimumPressesJoltage() {
-        long result = Long.MAX_VALUE;
+        long buttonPresses = Long.MAX_VALUE;
 
-        return result;
+        // Solve via BFS
+
+        // Initial light status: no button presses and all lights are off
+        JoltageStatus root = new JoltageStatus(0, new int[joltages.size()]);
+
+        // Add root to the queue
+        Queue<JoltageStatus> joltageStatusQue = new ArrayDeque<>();
+        joltageStatusQue.add(root);
+
+        // Mark root as visited
+        Set<Integer> visitedStatuses = new HashSet<>();
+        visitedStatuses.add(Arrays.hashCode(root.counters()));
+
+        while(!joltageStatusQue.isEmpty()) {
+            JoltageStatus currentJoltageStatus = joltageStatusQue.poll();
+
+            // Exit condition
+            if(isSolution(currentJoltageStatus.counters())) {
+                return currentJoltageStatus.numberOfPresses();
+            }
+
+            // Generate next level of the tree
+            int currentPresses = currentJoltageStatus.numberOfPresses();
+            int[] currentJoltages = currentJoltageStatus.counters();
+
+            for(Button button : buttons) {
+
+                int[] newJoltages = button.press(currentJoltages);
+
+                int statusHashCode = Arrays.hashCode(newJoltages);
+
+                // Prune joltages if they are greated than the max allowed
+                if((!visitedStatuses.contains(statusHashCode)) && (isValidJoltage(newJoltages))) {
+                    JoltageStatus newJoltageStatus = new JoltageStatus(currentPresses+1, newJoltages);
+                    visitedStatuses.add(statusHashCode);
+                    joltageStatusQue.add(newJoltageStatus);
+                }
+
+            }
+
+        }
+
+        return buttonPresses;
     }
+
+    public long findMinimumPressesJoltageRecursive() {
+        return findMinimumPressesJoltageRecursive(0, new int[joltages.size()]);
+    }
+
+    private long findMinimumPressesJoltageRecursive(int numberPresses, int[] counters) {
+
+        if(isSolution(counters)) {
+            return numberPresses;
+        } else if(!isValidJoltage(counters)) {
+            return Long.MAX_VALUE;
+        }
+
+        long minimumPreses = Long.MAX_VALUE;
+
+        for(Button button: buttons) {
+            int[] counterUpdate = button.press(counters);
+            long currentPresses = findMinimumPressesJoltageRecursive(numberPresses+1, counterUpdate);
+            if(currentPresses < minimumPreses) {
+                minimumPreses = currentPresses;
+            }
+        }
+
+        return minimumPreses;
+
+    }
+
+    private boolean isValidJoltage(int[] newJoltages) {
+        for(int i = 0; i < newJoltages.length; i++) {
+            if(newJoltages[i] > expectedJoltages[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isSolution(int[] outputJoltages) {
+        return Arrays.equals(expectedJoltages, outputJoltages);
+    }
+
 
 }

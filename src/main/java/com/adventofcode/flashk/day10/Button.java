@@ -28,4 +28,12 @@ public class Button {
         }
         return outputLights;
     }
+
+    public int[] press(int[] counters) {
+        int[] outputCounters = Arrays.copyOf(counters, counters.length);
+        for(int toggleIndex : toggles) {
+            outputCounters[toggleIndex]++;
+        }
+        return outputCounters;
+    }
 }

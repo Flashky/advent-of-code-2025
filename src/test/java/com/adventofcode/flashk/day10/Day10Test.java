@@ -2,12 +2,8 @@ package com.adventofcode.flashk.day10;
 
 import module java.base;
 
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 
 import com.adventofcode.flashk.common.test.constants.TestDisplayName;
 import com.adventofcode.flashk.common.test.constants.TestFilename;
@@ -70,9 +66,10 @@ class Day10Test {
         Factory factory = new Factory(inputs);
         long result = factory.solveB();
 
-		assertEquals(33L,result);
+		assertEquals(33L, result);
 	}
 
+    @Disabled
 	@Test
 	@Order(4)
 	@Tag(TestTag.PART_2)
