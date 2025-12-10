@@ -80,25 +80,10 @@ public class MovieTheaterPolygon2 {
     }
 
     private long calculateArea(Vector2 firstCorner, Vector2 secondCorner) {
-        long dx;
-        long dy;
+        long dx = Math.abs(firstCorner.getX() - secondCorner.getX()) + 1;
+        long dy = Math.abs(firstCorner.getY() - secondCorner.getY()) + 1;
 
-        if(firstCorner.getX() > secondCorner.getX()) {
-            dx = firstCorner.getX() - secondCorner.getX();
-        } else {
-            dx = secondCorner.getX() - firstCorner.getX();
-        }
-
-        if(firstCorner.getY() > secondCorner.getY()) {
-            dy = firstCorner.getY() - secondCorner.getY();
-        } else {
-            dy = secondCorner.getY() - firstCorner.getY();
-        }
-
-        dx++;
-        dy++;
-
-        return Math.abs(dx) * Math.abs(dy);
+        return dx * dy;
     }
 
     private Set<Vector2> generateEdgePoints(Vector2 firstPoint, Vector2 secondPoint) {
@@ -160,6 +145,7 @@ public class MovieTheaterPolygon2 {
         result.addAll(generateEdgePoints(secondCorner, fourthCorner));
 
         //return result.toArray(new Vector2[0]);
+
         return result;
 
     }
