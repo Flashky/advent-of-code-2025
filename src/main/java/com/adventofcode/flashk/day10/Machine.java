@@ -3,6 +3,12 @@ package com.adventofcode.flashk.day10;
 import static java.lang.IO.println;
 
 import module java.base;
+import com.google.ortools.linearsolver.MPConstraint;
+import com.google.ortools.linearsolver.MPObjective;
+import com.google.ortools.linearsolver.MPSolver;
+import com.google.ortools.linearsolver.MPVariable;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.math3.util.Combinations;
 
 public class Machine {
 
@@ -13,6 +19,8 @@ public class Machine {
     private final List<Button> buttons = new ArrayList<>();
     private final List<Integer> joltages = new ArrayList<>();
     private final int[] expectedJoltages;
+    private int joltageNumber;
+
     public Machine(String input) {
 
         String[] splittedInput = input.split(" ");
@@ -37,6 +45,7 @@ public class Machine {
             String group = joltageMatcher.group(1);
             String[] numbers = group.split(",");
             for(String number : numbers) {
+                joltageNumber = Integer.parseInt(group.replace(",", StringUtils.EMPTY));
                 joltages.add(Integer.parseInt(number));
             }
         }
@@ -95,6 +104,103 @@ public class Machine {
     }
 
     public long findMinimumPressesJoltage() {
+        long result = Long.MAX_VALUE;
+
+        Set<Set<Button>> buttonCombinations = getCombinations();
+/*
+        for(Set<Button> buttonCombination : buttonCombinations) {
+            // Solve Linear Algebra
+            long equationResult = solveEquations(buttonCombination);
+            if(equationResult < result) {
+                result = equationResult;
+            }
+        }
+*/
+        return result;
+    }
+
+    private long solveEquations(Set<Button> buttonCombination) {
+        String modelName = "my_model";
+        String solverId = "CBC_MIXED_INTEGER_PROGRAMMING";
+        MPSolver solver = MPSolver.createSolver(solverId);
+
+        //MPVariable x = solver.makeIntVar(0, Double.POSITIVE_INFINITY, "x");
+        //MPVariable x = solver.makeIntVar(0, Double.POSITIVE_INFINITY, "x");
+
+        MPVariable variables[] = solver.makeIntVarArray(buttonCombination.size(), 0,Double.POSITIVE_INFINITY);
+
+        // Constraints (constantes)
+
+        MPConstraint c1 = solver.makeConstraint(joltageNumber, joltageNumber, "my_equation");
+
+        Map<Button, MPVariable> variablePerButton = new HashMap<>();
+        int buttonIndex = 0;
+        for(Button button : buttonCombination) {
+            c1.setCoefficient(variables[buttonIndex], button.getMultiplier());
+            variablePerButton.put(button,variables[buttonIndex]);
+        }
+
+        // Función objetivo
+        MPObjective objective = solver.objective();
+        for(MPVariable variable : variables ){
+            objective.setCoefficient(variable, 1);
+        }
+
+        final MPSolver.ResultStatus resultStatus = solver.solve();
+
+        if (resultStatus != MPSolver.ResultStatus.OPTIMAL) {
+            // There is a solution
+            return Long.MAX_VALUE;
+        }
+
+        long result = 0;
+        for(Button button : variablePerButton.keySet()) {
+            result += (long) (button.getMultiplier() * variablePerButton.get(button).solutionValue());
+        }
+
+        return result;
+    }
+    /*
+    private long solveEquations(Set<Button> buttonCombination) {
+
+        // Obtain coefficients. Each button has a coefficient
+        double[] coefficients1 = new double[buttonCombination.size()];
+
+        int buttonIndex = 0;
+        for(Button button : buttonCombination) {
+            coefficients1[buttonIndex++] = button.getMultiplier();
+        }
+
+        RealMatrix coefficients = MatrixUtils.createRealMatrix(new double[][] { coefficients1 });
+
+        // Obtain constants
+        double[] joltageNumbers = { joltageNumber };
+
+        RealVector constants = new ArrayRealVector(joltageNumbers, false);
+
+        // Obtain solver
+        // SVD (SingularValueDecomposition (SVD) is designed for matrixes of any size
+        DecompositionSolver solver = new SingularValueDecomposition(coefficients).getSolver();
+
+        // Finally, solve by constants
+        RealVector solution = solver.solve(constants);
+
+        if(solution.isNaN()) {
+            return Long.MAX_VALUE;
+        }
+
+        long result = 0;
+        for(int i = 0; i < buttonCombination.size(); i++) {
+            int roundedResult = (int) Math.ceil(solution.getEntry(i));
+            result += roundedResult;
+        }
+
+        return result;
+
+    }*/
+
+    /*
+    public long findMinimumPressesJoltage() {
         long buttonPresses = Long.MAX_VALUE;
 
         // Solve via BFS
@@ -141,7 +247,7 @@ public class Machine {
 
         return buttonPresses;
     }
-
+*/
     /*
     public long findMinimumPressesJoltageRecursive() {
         return findMinimumPressesJoltageRecursive(0, new int[joltages.size()]);
@@ -171,6 +277,7 @@ public class Machine {
 
      */
 
+
     private boolean isValidJoltage(int[] newJoltages) {
         for(int i = 0; i < newJoltages.length; i++) {
             if(newJoltages[i] > expectedJoltages[i]) {
@@ -182,6 +289,38 @@ public class Machine {
 
     private boolean isSolution(int[] outputJoltages) {
         return Arrays.equals(expectedJoltages, outputJoltages);
+    }
+
+    private Set<Set<Button>> getCombinations() {
+        Set<Set<Button>> result = new HashSet<>();
+
+        for(int buttonsNumber = 1; buttonsNumber <= buttons.size(); buttonsNumber++) {
+            Combinations combinations = new Combinations(buttons.size(), buttonsNumber);
+            Iterator<int[]> iterator = combinations.iterator();
+            while(iterator.hasNext()) {
+                Set<Button> combination = new HashSet<>();
+                int[] buttonIndexes = iterator.next();
+                for(int buttonIndex : buttonIndexes) {
+                    combination.add(buttons.get(buttonIndex));
+                }
+                result.add(combination);
+            }
+        }
+
+        return result;
+
+    }
+    private Set<List<Button>> getButtonCombinations() {
+
+        Set<List<Button>> combinations = new HashSet<>();
+
+        for(int buttonsNumber = 1; buttonsNumber <= buttons.size(); buttonsNumber++) {
+            combinations.addAll(buttons.stream()
+                    .gather(Gatherers.windowSliding(buttonsNumber))
+                    .collect(Collectors.toSet()));
+        }
+
+        return combinations;
     }
 
 

@@ -109,6 +109,11 @@
 			<scope>compile</scope>
 		</dependency>
 
+        <dependency>
+            <groupId>com.google.ortools</groupId>
+            <artifactId>ortools-java</artifactId>
+            <version>9.14.6206</version>
+        </dependency>
 	</dependencies>
 
 	<build>
