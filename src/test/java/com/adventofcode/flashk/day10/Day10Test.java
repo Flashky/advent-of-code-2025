@@ -2,7 +2,6 @@ package com.adventofcode.flashk.day10;
 
 import module java.base;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -21,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_10)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day10Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_10;
@@ -36,7 +34,10 @@ class Day10Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Factory factory = new Factory(inputs);
+        long result = factory.solveA();
+
+		assertEquals(7L,result);
 	}
 
 	@Test
@@ -49,8 +50,10 @@ class Day10Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        Factory factory = new Factory(inputs);
+        long result = factory.solveA();
+
+		assertEquals(512L,result);
 
 	}
 
@@ -64,7 +67,10 @@ class Day10Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Factory factory = new Factory(inputs);
+        long result = factory.solveB();
+
+		assertEquals(33L,result);
 	}
 
 	@Test
@@ -77,7 +83,10 @@ class Day10Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
+        Factory factory = new Factory(inputs);
+        long result = factory.solveB();
+
+		println("Solution: " + result);
 		assertEquals(0L,0L);
 
 	}
