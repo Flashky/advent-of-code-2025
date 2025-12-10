@@ -7,8 +7,7 @@ import module java.base;
 public class Machine {
 
     private static final char ON = '#';
-    private static final char OFF = '.';
-    private static final Pattern JOLTAGE_PATTERN = Pattern.compile("\\{([^\\)]+)\\}");
+    private static final Pattern JOLTAGE_PATTERN = Pattern.compile("\\{([^)]+)}");
 
     private final boolean[] expectedLights;
     private final List<Button> buttons = new ArrayList<>();
@@ -27,7 +26,7 @@ public class Machine {
 
         // Buttons
         for(int i = 1; i < splittedInput.length - 1; i++) {
-            buttons.add(new Button(splittedInput[i]));
+            buttons.add(new Button(splittedInput[i], expectedLights.length));
         }
 
         // Joltage
@@ -143,6 +142,7 @@ public class Machine {
         return buttonPresses;
     }
 
+    /*
     public long findMinimumPressesJoltageRecursive() {
         return findMinimumPressesJoltageRecursive(0, new int[joltages.size()]);
     }
@@ -168,6 +168,8 @@ public class Machine {
         return minimumPreses;
 
     }
+
+     */
 
     private boolean isValidJoltage(int[] newJoltages) {
         for(int i = 0; i < newJoltages.length; i++) {

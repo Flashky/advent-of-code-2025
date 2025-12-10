@@ -3,22 +3,29 @@ package com.adventofcode.flashk.day10;
 import module java.base;
 import lombok.Getter;
 
+@Getter
 public class Button {
 
-    private static final Pattern BUTTON_PATTERN = Pattern.compile("\\(([^\\)]+)\\)");
+    private static final Pattern BUTTON_PATTERN = Pattern.compile("\\(([^)]+)\\)");
 
-    @Getter
     private final List<Integer> toggles = new ArrayList<>();
+    private final long multiplier ;
 
-    public Button(String input) {
+    public Button(String input, int counterSize) {
         Matcher buttonMatcher = BUTTON_PATTERN.matcher(input);
+        long multiplier = 0;
         while(buttonMatcher.find()) {
             String group = buttonMatcher.group(1);
             String[] numbers = group.split(",");
             for(String number : numbers) {
-                toggles.add(Integer.parseInt(number));
+                int index = Integer.parseInt(number);
+                toggles.add(index);
+                multiplier += Math.powExact(10L, counterSize-index-1);
             }
         }
+
+        this.multiplier = multiplier;
+
     }
 
     public boolean[] press(boolean[] lights) {
