@@ -40,8 +40,7 @@ public class Reactor {
     public long solveB() {
         long result = 0;
 
-        // Search all possible paths from you
-        // dfs
+        // Only valid for the sample
 
         result = dfs(SERVER,false,false);
         return result;
