@@ -67,8 +67,8 @@ class Day11Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, "sample_2.txt");
 
-        ReactorPart2OnlyInput reactor = new ReactorPart2OnlyInput(inputs);
-        long result = reactor.solveBSample();
+        ReactorJGrapht reactor = new ReactorJGrapht(inputs);
+        long result = reactor.solveB(true);
 
 		assertEquals(2L,result);
 	}
@@ -83,15 +83,10 @@ class Day11Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-        ReactorPart2OnlyInput reactor = new ReactorPart2OnlyInput(inputs);
-        long result = reactor.solveB();
+        ReactorJGrapht reactor = new ReactorJGrapht(inputs);
+        long result = reactor.solveB(false);
 
-		println("Solution: " + result);
-
-        // 2147471439120 -> Your answer is too low
-        // 17007973797830400 -> Your answer is too high
-        // 17007973830000000 -> No he probado, pero sería mayor que la anterior, así que no vale
-		assertEquals(0L,0L);
+		assertEquals(385912350172800L,result);
 
 	}
 

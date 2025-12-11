@@ -1,17 +1,12 @@
 package com.adventofcode.flashk.day11;
 
-import static java.lang.IO.println;
-
 import module java.base;
 import org.apache.commons.lang3.StringUtils;
 
 public class Reactor {
 
-    private static final String YOU = "you";
+    private static final String START = "you";
     private static final String END = "out";
-    private static final String SERVER = "svr";
-    private static final String DAC = "dac";
-    private static final String FFT = "fft";
 
     private final Map<String,List<String>> graph = new HashMap<>();
 
@@ -34,16 +29,7 @@ public class Reactor {
     }
 
     public long solveA() {
-        return dfs(YOU);
-    }
-
-    public long solveB() {
-        long result = 0;
-
-        // Only valid for the sample
-
-        result = dfs(SERVER,false,false);
-        return result;
+        return dfs(START);
     }
 
     private long dfs(String node) {
@@ -55,26 +41,6 @@ public class Reactor {
         List<String> adjacents = graph.get(node);
         for(String adjacent : adjacents) {
             result += dfs(adjacent);
-        }
-
-        return result;
-    }
-
-    private long dfs(String node, boolean hasPassedDac, boolean hasPassedFft) {
-        if(END.equals(node)) {
-            if(hasPassedDac && hasPassedFft) {
-                return 1;
-            } else {
-                return 0;
-            }
-        }
-
-        long result = 0;
-        List<String> adjacents = graph.get(node);
-        for(String adjacent : adjacents) {
-            boolean nexPassedDac = hasPassedDac || DAC.equals(adjacent);
-            boolean nexPassedFft = hasPassedFft || FFT.equals(adjacent);
-            result += dfs(adjacent, nexPassedDac, nexPassedFft);
         }
 
         return result;
