@@ -14,7 +14,7 @@
 - [Day 9](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day09)
 - [Day 10](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day10)
 - [Day 11 - Reactor](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day11)
-- [Day 12](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day12)
+- [Day 12 - Christmas Tree Farm](https://github.com/Flashky/advent-of-code-2025/tree/master/src/main/java/com/adventofcode/flashk/day12)
 
 ## Cloning this repository
 

@@ -1,4 +1,4 @@
-package com.adventofcode.flashk.day12;
+package com.adventofcode.flashk.day12.generic;
 
 import static java.lang.IO.println;
 
@@ -20,7 +20,11 @@ public class ChristmasTreeFarm {
 
     public long solveA() {
         long result = 0;
-
+        for(Region region : regions) {
+            if(region.canFit(presents)) {
+                result++;
+            }
+        }
         return result;
     }
 }

@@ -1,4 +1,4 @@
-package com.adventofcode.flashk.day12;
+package com.adventofcode.flashk.day12.generic;
 
 import static java.lang.IO.println;
 

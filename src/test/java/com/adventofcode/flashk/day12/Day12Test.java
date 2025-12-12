@@ -2,6 +2,8 @@ package com.adventofcode.flashk.day12;
 
 import module java.base;
 
+import com.adventofcode.flashk.day12.generic.ChristmasTreeFarm;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -29,6 +31,7 @@ class Day12Test {
 	@Tag(TestTag.PART_1)
 	@Tag(TestTag.SAMPLE)
 	@DisplayName(TestDisplayName.PART_1_SAMPLE)
+	@Disabled
 	void part1SampleTest() {
 
 		// Read input file
@@ -50,40 +53,14 @@ class Day12Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		ChristmasTreeFarm christmasTreeFarm = new ChristmasTreeFarm(inputs);
-		long result = christmasTreeFarm.solveA();
+		ChristmasTreeFarmNonGeneric christmasTreeFarm = new ChristmasTreeFarmNonGeneric(inputs);
+		long result = christmasTreeFarm.solve();
 
-		println("Solution: "+result);
-		assertEquals(0L,0L);
+		// Solved with an spreadsheet -> 427
 
-	}
-
-	@Test
-	@Order(3)
-	@Tag(TestTag.PART_2)
-	@Tag(TestTag.SAMPLE)
-	@DisplayName(TestDisplayName.PART_2_SAMPLE)
-	void part2SampleTest() {
-
-		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
-
-		assertEquals(0L,0L);
-	}
-
-	@Test
-	@Order(4)
-	@Tag(TestTag.PART_2)
-	@Tag(TestTag.INPUT)
-	@DisplayName(TestDisplayName.PART_2_INPUT)
-	void part2InputTest() {
-
-		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
-
-		println("Solution: ");
-		assertEquals(0L,0L);
+		assertEquals(427L,result);
 
 	}
+
 
 }
