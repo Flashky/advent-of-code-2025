@@ -2,7 +2,6 @@ package com.adventofcode.flashk.day12;
 
 import module java.base;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -21,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_12)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day12Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_12;
@@ -36,7 +34,10 @@ class Day12Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+		ChristmasTreeFarm christmasTreeFarm = new ChristmasTreeFarm(inputs);
+		long result = christmasTreeFarm.solveA();
+
+		assertEquals(2L,result);
 	}
 
 	@Test
@@ -49,7 +50,10 @@ class Day12Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
+		ChristmasTreeFarm christmasTreeFarm = new ChristmasTreeFarm(inputs);
+		long result = christmasTreeFarm.solveA();
+
+		println("Solution: "+result);
 		assertEquals(0L,0L);
 
 	}
