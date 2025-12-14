@@ -101,13 +101,8 @@ public class MovieTheater {
                 case END:
                     yCoordinates.remove(currentEvent.getSegment().getLeft().y());
 
-                    // Check for upper square segment
-                    if (hasNoCeiling(yCoordinates, squareHigherY)) {
-                        return false;
-                    }
-
-                    // Check for lower square segment
-                    if (hasNoFloor(yCoordinates, squareLowerY)) {
+                    // Check square segments
+                    if (hasNoCeiling(yCoordinates, squareHigherY) || hasNoFloor(yCoordinates, squareLowerY)) {
                         return false;
                     }
 
@@ -117,7 +112,6 @@ public class MovieTheater {
                     if (hasNoCeiling(yCoordinates, squareHigherY)) {
                         return false;
                     }
-
                     break;
                 case START_SQ_LOWER:
                     squareLowerY = currentEvent.getSegment().getLeft().y();
