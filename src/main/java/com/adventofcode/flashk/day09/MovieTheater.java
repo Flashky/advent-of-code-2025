@@ -88,7 +88,8 @@ public class MovieTheater {
         int squareLowerY = -1;
         int squareHigherY = -1;
 
-        while(!events.isEmpty()) {
+        boolean isValid = true;
+        while(!events.isEmpty() && isValid) {
 
             Event1D currentEvent = events.poll();
 
@@ -100,22 +101,16 @@ public class MovieTheater {
                     yCoordinates.remove(currentEvent.getSegment().getLeft().y());
 
                     // Check square segments
-                    if (hasNoCeiling(yCoordinates, squareHigherY) || hasNoFloor(yCoordinates, squareLowerY)) {
-                        return false;
-                    }
+                    isValid = hasCeiling(yCoordinates, squareHigherY) && hasFloor(yCoordinates, squareLowerY);
 
                     break;
                 case START_SQ_HIGHER:
                     squareHigherY = currentEvent.getSegment().getLeft().y();
-                    if (hasNoCeiling(yCoordinates, squareHigherY)) {
-                        return false;
-                    }
+                    isValid = hasCeiling(yCoordinates, squareHigherY);
                     break;
                 case START_SQ_LOWER:
                     squareLowerY = currentEvent.getSegment().getLeft().y();
-                    if (hasNoFloor(yCoordinates, squareLowerY)) {
-                        return false;
-                    }
+                    isValid = hasFloor(yCoordinates, squareLowerY);
                     break;
                 case END_SQ_HIGHER:
                 case END_SQ_LOWER:
@@ -124,25 +119,25 @@ public class MovieTheater {
 
         }
 
-        return true;
+        return isValid;
 
     }
 
-    private static boolean hasNoFloor(TreeSet<Integer> coordinates, int squareLowerXY) {
+    private static boolean hasFloor(TreeSet<Integer> coordinates, int squareLowerXY) {
         // Calculation does not apply if there is no lower square edge
         if(squareLowerXY == -1) {
-            return false;
+            return true;
         }
 
-        return coordinates.floor(squareLowerXY) == null;
+        return coordinates.floor(squareLowerXY) != null;
     }
 
-    private static boolean hasNoCeiling(TreeSet<Integer> coordinates, int squareHigherXY) {
+    private static boolean hasCeiling(TreeSet<Integer> coordinates, int squareHigherXY) {
         // Calculation does not apply if there is no higher square edge
         if(squareHigherXY == -1){
-            return false;
+            return true;
         }
-        return coordinates.ceiling(squareHigherXY) == null;
+        return coordinates.ceiling(squareHigherXY) != null;
     }
 
     private PriorityQueue<Event1D> prepareVerticalEvents(Point firstCorner, Point secondCorner) {
@@ -192,8 +187,9 @@ public class MovieTheater {
         // Variables to handle square edge detection
         int squareLowerX = -1;
         int squareHigherX = -1;
+        boolean isValid = true;
 
-        while(!events.isEmpty()) {
+        while(!events.isEmpty() && isValid) {
 
             Event1D currentEvent = events.poll();
 
@@ -204,23 +200,17 @@ public class MovieTheater {
                 case END:
                     xCoordinates.remove(currentEvent.getSegment().getUp().x());
 
-                    if (hasNoCeiling(xCoordinates, squareHigherX) || hasNoFloor(xCoordinates, squareLowerX))  {
-                        return false;
-                    }
+                    isValid = hasCeiling(xCoordinates, squareHigherX) && hasFloor(xCoordinates, squareLowerX);
 
                     break;
                 case START_SQ_HIGHER:
                     squareHigherX = currentEvent.getSegment().getUp().x();
-                    if (hasNoCeiling(xCoordinates, squareHigherX)) {
-                        return false;
-                    }
+                    isValid = hasCeiling(xCoordinates, squareHigherX);
 
                     break;
                 case START_SQ_LOWER:
                     squareLowerX = currentEvent.getSegment().getUp().x();
-                    if (hasNoFloor(xCoordinates, squareLowerX)) {
-                        return false;
-                    }
+                    isValid = hasFloor(xCoordinates, squareLowerX);
                     break;
                 case END_SQ_HIGHER:
                 case END_SQ_LOWER:
@@ -229,7 +219,7 @@ public class MovieTheater {
 
         }
 
-        return true;
+        return isValid;
     }
 
     private PriorityQueue<Event1D> prepareHorizontalEvents(Point firstCorner, Point secondCorner) {
