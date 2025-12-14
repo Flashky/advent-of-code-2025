@@ -11,7 +11,6 @@ import com.adventofcode.flashk.common.test.constants.TestFolder;
 import com.adventofcode.flashk.common.test.constants.TestTag;
 import com.adventofcode.flashk.common.test.utils.Input;
 
-import static java.lang.IO.println;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_09)
@@ -30,7 +29,7 @@ class Day09Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-        MovieTheaterPolygon2 movieTheater = new MovieTheaterPolygon2(inputs);
+		MovieTheater movieTheater = new MovieTheater(inputs);
         long result = movieTheater.solveA();
 
 		assertEquals(50L,result);
@@ -46,7 +45,7 @@ class Day09Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-        MovieTheaterPolygon2 movieTheater = new MovieTheaterPolygon2(inputs);
+		MovieTheater movieTheater = new MovieTheater(inputs);
         long result = movieTheater.solveA();
 
 		assertEquals(4754955192L,result);
@@ -63,13 +62,13 @@ class Day09Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-        MovieTheaterPolygon2 movieTheater = new MovieTheaterPolygon2(inputs);
+        //MovieTheaterPolygon2 movieTheater = new MovieTheaterPolygon2(inputs);
+		MovieTheater movieTheater = new MovieTheater(inputs);
         long result = movieTheater.solveB();
 
 		assertEquals(24L,result);
 	}
 
-    @Disabled
 	@Test
 	@Order(4)
 	@Tag(TestTag.PART_2)
@@ -79,15 +78,11 @@ class Day09Test {
 
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
-        MovieTheaterPolygon2 movieTheater = new MovieTheaterPolygon2(inputs);
+
+		MovieTheater movieTheater = new MovieTheater(inputs);
         long result = movieTheater.solveB();
 
-        println("Solution: "+result);
-
-        // 4694736662 -> too high (4 min 15 sec)
-        // 4732956602 -> too high (4 min 40 sec)
-
-		assertEquals(0L,0L);
+		assertEquals(1568849600L,result);
 
 	}
 

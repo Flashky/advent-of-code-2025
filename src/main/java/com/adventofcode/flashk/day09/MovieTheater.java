@@ -3,40 +3,46 @@ package com.adventofcode.flashk.day09;
 import static java.lang.IO.println;
 
 import module java.base;
-import com.adventofcode.flashk.common.Vector2;
-import org.apache.commons.math3.util.MathUtils;
 
 public class MovieTheater {
 
-    private final List<Vector2> redTiles;
-
-    private final Set<Vector2> edgePoints = new HashSet<>();
-    private Vector2[] edgePointsArray;
-    private final Map<Vector2,Boolean> pointInPolygon = new HashMap<>();
-
-    //private final int minX;
-    //private final int maxX;
+    private final List<Point> redTiles;
+    private final Set<Segment1D> verticalSegments = new HashSet<>();
+    private final Set<Segment1D> horizontalSegments = new HashSet<>();
 
     public MovieTheater(List<String> inputs) {
-        redTiles = inputs.stream().map(Vector2::new).toList();
-        calculateEdgePoints();
+        redTiles = inputs.stream().map(Point::new).toList();
 
-        println("Edge points calculated");
+        // Gen
+        //Set<Point> allEdgePoints = new HashSet<>();
+
+        int n = redTiles.size();
+        for(int i = 0; i < n; i++) {
+            // Take two consecutive points and create a segment
+            // The module allows to pick the first one once at the last item
+            Point a = redTiles.get(i);
+            Point b = redTiles.get((i + 1) % n);
+            Segment1D segment = new Segment1D(a,b);
+
+            if(segment.isVertical()) {
+                verticalSegments.add(segment);
+            } else {
+                horizontalSegments.add(segment);
+            }
+        }
     }
 
     public long solveA() {
         long result = Long.MIN_VALUE;
 
         // Buscar en cada par de coordenadas el rectángulo más grande.
-        for(int i = 0; i < redTiles.size(); i++) {
-            Vector2 firstCorner = redTiles.get(i);
+        for (int i = 0; i < redTiles.size(); i++) {
+            Point firstCorner = redTiles.get(i);
 
-            for(int j = i+1; j < redTiles.size(); j++) {
-                Vector2 secondCorner = redTiles.get(j);
+            for (int j = i + 1; j < redTiles.size(); j++) {
+                Point secondCorner = redTiles.get(j);
                 long area = calculateArea(firstCorner, secondCorner);
-                if(area > result) {
-                    result = area;
-                }
+                result = Math.max(area, result);
             }
         }
 
@@ -48,17 +54,17 @@ public class MovieTheater {
 
         // Buscar en cada par de coordenadas el rectángulo más grande.
         for(int i = 0; i < redTiles.size(); i++) {
-            Vector2 firstCorner = redTiles.get(i);
+            Point firstCorner = redTiles.get(i);
 
-            for(int j = i+1; j < redTiles.size(); j++) {
-                Vector2 secondCorner = redTiles.get(j);
-
+            for(int j = i + 1; j < redTiles.size(); j++) {
+                Point secondCorner = redTiles.get(j);
                 long area = calculateArea(firstCorner, secondCorner);
-                if(area <= result) {
+
+                if(area < result) {
                     continue;
                 }
-                Set<Vector2> rectanglePoints = calculateRectanglePoints(firstCorner, secondCorner);
-                if(insidePolygon(rectanglePoints)) {
+
+                if(isValidRectangle(firstCorner, secondCorner)) {
                     result = area;
                 }
             }
@@ -67,189 +73,219 @@ public class MovieTheater {
         return result;
     }
 
-    private long calculateArea(Vector2 firstCorner, Vector2 secondCorner) {
-        long dx;
-        long dy;
-
-        if(firstCorner.getX() > secondCorner.getX()) {
-            dx = firstCorner.getX() - secondCorner.getX();
-        } else {
-            dx = secondCorner.getX() - firstCorner.getX();
-        }
-
-        if(firstCorner.getY() > secondCorner.getY()) {
-            dy = firstCorner.getY() - secondCorner.getY();
-        } else {
-            dy = secondCorner.getY() - firstCorner.getY();
-        }
-
-        dx++;
-        dy++;
-
-        return Math.abs(dx) * Math.abs(dy);
+    private boolean isValidRectangle(Point firstCorner, Point secondCorner) {
+        // Make both a vertical and a valid sweep
+        return isValidSweepVertical(firstCorner, secondCorner) && isValidSweepHorizontal(firstCorner, secondCorner);
     }
 
-    private void calculateEdgePoints() {
+    private boolean isValidSweepVertical(Point firstCorner, Point secondCorner) {
 
-        Vector2 firstPoint = redTiles.getFirst();
-        for(int i = 1; i < redTiles.size(); i++) {
-            Vector2 secondPoint = redTiles.get(i);
-            addEdgePoints(firstPoint, secondPoint);
-            firstPoint = secondPoint;
+        // Check horizontal segments
+        PriorityQueue<Event1D> events = prepareVerticalEvents(firstCorner, secondCorner);
+
+        // Will allow to check if there are segments over and below the square edges
+        TreeSet<Integer> yCoordinates = new TreeSet<>();
+
+        // Variables to handle square edge detection
+        int squareLowerY = -1;
+        int squareHigherY = -1;
+
+        while(!events.isEmpty()) {
+
+            Event1D currentEvent = events.poll();
+
+            switch(currentEvent.getType()) {
+                case START:
+                    yCoordinates.add(currentEvent.getSegment().getLeft().y());
+                    break;
+                case END:
+                    yCoordinates.remove(currentEvent.getSegment().getLeft().y());
+
+                    // Check for upper square segment
+                    if (hasNoCeiling(yCoordinates, squareHigherY)) {
+                        return false;
+                    }
+
+                    // Check for lower square segment
+                    if (hasNoFloor(yCoordinates, squareLowerY)) {
+                        return false;
+                    }
+
+                    break;
+                case START_SQ_HIGHER:
+                    squareHigherY = currentEvent.getSegment().getLeft().y();
+                    if (hasNoCeiling(yCoordinates, squareHigherY)) {
+                        return false;
+                    }
+
+                    break;
+                case START_SQ_LOWER:
+                    squareLowerY = currentEvent.getSegment().getLeft().y();
+                    if (hasNoFloor(yCoordinates, squareLowerY)) {
+                        return false;
+                    }
+                    break;
+                case END_SQ_HIGHER:
+                case END_SQ_LOWER:
+                    return true;
+            }
+
         }
 
-        Vector2 secondPoint = redTiles.getFirst();
-        addEdgePoints(firstPoint, secondPoint);
+        return true;
 
     }
 
-    private void addEdgePoints(Vector2 firstPoint, Vector2 secondPoint) {
-
-        edgePoints.add(firstPoint);
-        edgePoints.add(secondPoint);
-
-        if(firstPoint.getX() == secondPoint.getX()) {
-
-            // Same vertical
-            int minY = Math.min(firstPoint.getY(), secondPoint.getY());
-            int maxY = Math.max(firstPoint.getY(), secondPoint.getY());
-
-            // Add all edge points
-            for(int y = minY+1; y < maxY; y++) {
-                edgePoints.add(new Vector2(firstPoint.getX(), y));
-            }
-
-        } else {
-
-            // Same horizontal
-            int minX = Math.min(firstPoint.getX(), secondPoint.getX());
-            int maxX = Math.max(firstPoint.getX(), secondPoint.getX());
-
-            // Add all edge points
-            for(int x = minX+1; x < maxX; x++) {
-                edgePoints.add(new Vector2(x, firstPoint.getY()));
-            }
+    private static boolean hasNoFloor(TreeSet<Integer> yCoordinates, int squareLowerY) {
+        // Calculation does not apply if there is no lower square edge
+        if(squareLowerY == -1) {
+            return false;
         }
+
+        return yCoordinates.floor(squareLowerY) == null;
     }
 
-    private Set<Vector2> calculateRectanglePoints(Vector2 firstPoint, Vector2 secondPoint) {
-        Set<Vector2> rectanglePoints = new HashSet<>();
-
-        int minX = Math.min(firstPoint.getX(), secondPoint.getX());
-        int maxX = Math.max(firstPoint.getX(), secondPoint.getX());
-        int minY = Math.min(firstPoint.getY(), secondPoint.getY());
-        int maxY = Math.max(firstPoint.getY(), secondPoint.getY());
-
-        for(int x = minX; x <= maxX; x++) {
-            for(int y = minY; y <= maxY; y++) {
-                rectanglePoints.add(new Vector2(x,y));
-            }
+    private static boolean hasNoCeiling(TreeSet<Integer> yCoordinates, int squareHigherY) {
+        // Calculation does not apply if there is no higher square edge
+        if(squareHigherY == -1){
+            return false;
         }
-
-        return rectanglePoints;
+        return yCoordinates.ceiling(squareHigherY) == null;
     }
 
-    /// Calculates if all rectangle points are inside of the puzzle polygon.
-    /// @return true if every point is inside the polygon. false otherwise.
-    private boolean insidePolygon(Set<Vector2> rectanglePoints) {
-        for(Vector2 point : rectanglePoints) {
-            // use winding number algorithm
+    private PriorityQueue<Event1D> prepareVerticalEvents(Point firstCorner, Point secondCorner) {
 
-            if(!insidePolygon(point)) {
-                return false;
-            }
+        PriorityQueue<Event1D> events = new PriorityQueue<>();
+
+        // There are no horizontal events if the rectangle is just a vertical line
+        if(firstCorner.x() == secondCorner.x()) {
+            return events;
         }
+
+        // Rectangle horizontal segments events
+        int minX = Math.min(firstCorner.x(), secondCorner.x());
+        int maxX = Math.max(firstCorner.x(), secondCorner.x());
+        int minY = Math.min(firstCorner.y(), secondCorner.y());
+        int maxY = Math.max(firstCorner.y(), secondCorner.y());
+
+        // Upper segment
+        Segment1D higherSegment = new Segment1D(new Point(minX,maxY), new Point(maxX, maxY));
+        events.add(new Event1D(higherSegment.getLeft().x(), higherSegment, EventType1D.START_SQ_HIGHER));
+        events.add(new Event1D(higherSegment.getRight().x(), higherSegment, EventType1D.END_SQ_HIGHER));
+
+        // Lower segment
+        Segment1D lowerSegment = new Segment1D(new Point(minX,minY), new Point(maxX, minY));
+        if(!higherSegment.equals(lowerSegment)) {
+            events.add(new Event1D(lowerSegment.getLeft().x(), lowerSegment, EventType1D.START_SQ_LOWER));
+            events.add(new Event1D(lowerSegment.getRight().x(), lowerSegment, EventType1D.END_SQ_LOWER));
+        }
+
+        // Polygon segments
+        for(Segment1D segment : horizontalSegments) {
+            events.add(new Event1D(segment.getLeft().x(), segment, EventType1D.START));
+            events.add(new Event1D(segment.getRight().x(), segment, EventType1D.END));
+        }
+
+        return events;
+    }
+
+    private boolean isValidSweepHorizontal(Point firstCorner, Point secondCorner) {
+
+        // Check horizontal segments
+        PriorityQueue<Event1D> events = prepareHorizontalEvents(firstCorner, secondCorner);
+
+        // Will allow to check if there are segments left and right the square edges
+        TreeSet<Integer> xCoordinates = new TreeSet<>();
+
+        // Variables to handle square edge detection
+        int squareLowerX = -1;
+        int squareHigherX = -1;
+
+        while(!events.isEmpty()) {
+
+            Event1D currentEvent = events.poll();
+
+            switch(currentEvent.getType()) {
+                case START:
+                    xCoordinates.add(currentEvent.getSegment().getUp().x());
+                    break;
+                case END:
+                    xCoordinates.remove(currentEvent.getSegment().getUp().x());
+
+                    // Check for upper square segment
+                    if (hasNoCeiling(xCoordinates, squareHigherX)) {
+                        return false;
+                    }
+
+                    // Check for lower square segment
+                    if (hasNoFloor(xCoordinates, squareLowerX)) {
+                        return false;
+                    }
+
+                    break;
+                case START_SQ_HIGHER:
+                    squareHigherX = currentEvent.getSegment().getUp().x();
+                    if (hasNoCeiling(xCoordinates, squareHigherX)) {
+                        return false;
+                    }
+
+                    break;
+                case START_SQ_LOWER:
+                    squareLowerX = currentEvent.getSegment().getUp().x();
+                    if (hasNoFloor(xCoordinates, squareLowerX)) {
+                        return false;
+                    }
+                    break;
+                case END_SQ_HIGHER:
+                case END_SQ_LOWER:
+                    return true;
+            }
+
+        }
+
         return true;
     }
 
-    /// Verifies if a single point is inside of the puzzle polygon.
-    private boolean insidePolygon(Vector2 point) {
-        if(edgePoints.contains(point)) {
-            return true;
+    private PriorityQueue<Event1D> prepareHorizontalEvents(Point firstCorner, Point secondCorner) {
+
+        PriorityQueue<Event1D> events = new PriorityQueue<>();
+
+        // There are no horizontal events if the rectangle is just a horizontal line
+        if(firstCorner.y() == secondCorner.y()) {
+            return events;
         }
 
-        if(pointInPolygon.containsKey(point)) {
-            return pointInPolygon.get(point);
+        // Rectangle horizontal segments events
+        int minX = Math.min(firstCorner.x(), secondCorner.x());
+        int maxX = Math.max(firstCorner.x(), secondCorner.x());
+        int minY = Math.min(firstCorner.y(), secondCorner.y());
+        int maxY = Math.max(firstCorner.y(), secondCorner.y());
+
+        // Upper segment (right)
+        Segment1D rightSegment = new Segment1D(new Point(maxX,minY), new Point(maxX, maxY));
+        events.add(new Event1D(rightSegment.getDown().y(), rightSegment, EventType1D.START_SQ_HIGHER));
+        events.add(new Event1D(rightSegment.getUp().y(), rightSegment, EventType1D.END_SQ_HIGHER));
+
+        // Lower segment (left)
+        Segment1D leftSegment = new Segment1D(new Point(minX,minY), new Point(minX, maxY));
+        if(!rightSegment.equals(leftSegment)) {
+            events.add(new Event1D(leftSegment.getDown().y(), leftSegment, EventType1D.START_SQ_LOWER));
+            events.add(new Event1D(leftSegment.getUp().y(), leftSegment, EventType1D.END_SQ_LOWER));
         }
 
-        // Calculamos un punto P que va a estar en la misma horizontal, pero en otra posición vertical
-        int px = point.getX() + 1;
-        int py = point.getY();
-        int m = 0; // El slope de una recta horizontal es 0
-
-        // Idea 1:
-        // En lugar de trazar una recta y buscar intersecciones, compruebo cada punto comparado con puntos que
-        // estén en su misma horizontal.
-        // Para que el punto esté dentro del rectángulo se tienen que dar las condiciones:
-        // - Las coordenadas Y han de ser iguales (misma recta)
-        // - La coordenada del punto ha de ser menor que la del eje (parar hacer raycasting únicamente a la derecha).
-        // - El número de puntos cruzados debe ser impar
-
-        int count = 0;
-        for(Vector2 edgePoint : edgePoints) {
-            if(edgePoint.getY() == point.getY()) {
-                if(point.getX() < edgePoint.getX()) {
-                    count++;
-                }
-            }
+        // Polygon segments
+        for(Segment1D segment : verticalSegments) {
+            events.add(new Event1D(segment.getDown().y(), segment, EventType1D.START));
+            events.add(new Event1D(segment.getUp().y(), segment, EventType1D.END));
         }
 
-        boolean isOdd = count % 2 != 0;
-        if(isOdd) {
-            pointInPolygon.put(point, true);
-        } else {
-            pointInPolygon.put(point, false);
-        }
-        return isOdd;
+        return events;
     }
 
-    private int windingNumber(Vector2 point) {
+    private long calculateArea(Point firstCorner, Point secondCorner) {
+        long dx = Math.abs(firstCorner.x() - secondCorner.x()) + 1;
+        long dy = Math.abs(firstCorner.y() - secondCorner.y()) + 1;
 
-        int wn = 0;
-        int n = edgePoints.size();
-
-        // This logic works even with horizontal and vertical edges
-
-        // Traverse the polygon points
-        for(int i = 0; i < n; i++) {
-            // Take two consecutive points.
-            // The module allows to pick the first one once at the last item
-            Vector2 pointA = edgePointsArray[i];
-            Vector2 pointB = edgePointsArray[(i+1) % n];
-
-
-            if(pointA.getY() <= point.getY()) {
-                if(pointB.getY() > point.getY()) {
-                    // If vertical, isLeft will tell if point is at the left of points A nd B
-                    if(isLeft(pointA, pointB, point) > 0)  {
-                        wn++;
-                    }
-                }
-            } else {
-                if(pointB.getY() <= point.getY()) {
-                    if(isLeft(pointA, pointB, point) < 0) {
-                        wn--;
-                    }
-                }
-            }
-        }
-
-        return wn;
-
+        return dx * dy;
     }
-
-    /// Calculates if the specified point is at the left of the segment conformed by points A and B:
-    /// Positive sign: P is at the left of the AB segment.
-    /// Negative sign: P is at the right of the AB segment;
-    /// 0: P is on the same line as the AB segment.
-    private double isLeft(Vector2 pointA, Vector2 pointB, Vector2 point) {
-        int deltaXba = pointB.getX() - pointA.getX();
-        int deltaYpa = point.getY() - pointA.getY();
-        int deltaXpa = point.getX() - pointA.getX();
-        int deltaYba = pointB.getY() - pointA.getY();
-
-        return (deltaXba * deltaYpa) - (deltaXpa * deltaYba);
-
-    }
-
 }
