@@ -1,7 +1,5 @@
 package com.adventofcode.flashk.day09;
 
-import static java.lang.IO.println;
-
 import module java.base;
 
 public class MovieTheater {
