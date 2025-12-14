@@ -128,21 +128,21 @@ public class MovieTheater {
 
     }
 
-    private static boolean hasNoFloor(TreeSet<Integer> yCoordinates, int squareLowerY) {
+    private static boolean hasNoFloor(TreeSet<Integer> coordinates, int squareLowerXY) {
         // Calculation does not apply if there is no lower square edge
-        if(squareLowerY == -1) {
+        if(squareLowerXY == -1) {
             return false;
         }
 
-        return yCoordinates.floor(squareLowerY) == null;
+        return coordinates.floor(squareLowerXY) == null;
     }
 
-    private static boolean hasNoCeiling(TreeSet<Integer> yCoordinates, int squareHigherY) {
+    private static boolean hasNoCeiling(TreeSet<Integer> coordinates, int squareHigherXY) {
         // Calculation does not apply if there is no higher square edge
-        if(squareHigherY == -1){
+        if(squareHigherXY == -1){
             return false;
         }
-        return yCoordinates.ceiling(squareHigherY) == null;
+        return coordinates.ceiling(squareHigherXY) == null;
     }
 
     private PriorityQueue<Event1D> prepareVerticalEvents(Point firstCorner, Point secondCorner) {
@@ -204,13 +204,7 @@ public class MovieTheater {
                 case END:
                     xCoordinates.remove(currentEvent.getSegment().getUp().x());
 
-                    // Check for upper square segment
-                    if (hasNoCeiling(xCoordinates, squareHigherX)) {
-                        return false;
-                    }
-
-                    // Check for lower square segment
-                    if (hasNoFloor(xCoordinates, squareLowerX)) {
+                    if (hasNoCeiling(xCoordinates, squareHigherX) || hasNoFloor(xCoordinates, squareLowerX))  {
                         return false;
                     }
 
