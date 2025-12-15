@@ -19,7 +19,7 @@ public class Machine {
 
     private final boolean[] expectedLights;
     private final List<Button> buttons = new ArrayList<>();
-    private final List<Long> joltages = new ArrayList<>();
+    private List<Long> joltages = new ArrayList<>();
 
     public Machine(String input) {
 
@@ -44,10 +44,7 @@ public class Machine {
         if(joltageMatcher.find()) {
             String group = joltageMatcher.group(1);
             String[] numbers = group.split(",");
-
-            for(String number : numbers) {
-                joltages.add(Long.parseLong(number));
-            }
+            joltages = Arrays.stream(numbers).mapToLong(Long::parseLong).boxed().toList();
         }
 
 
@@ -111,14 +108,14 @@ public class Machine {
     // TODO couldn't make this work, but I don't want to throw it away...
     private long simplexMath3() {
 
-        // Objetive function
+        // Objetive function: Minimize Z = x1 + x2 + ... + xn
         double[] objectiveCoefficients = new double[buttons.size()];
         Arrays.fill(objectiveCoefficients, 1);
         LinearObjectiveFunction objectiveFunction = new LinearObjectiveFunction(objectiveCoefficients, 0);
 
         Set<LinearConstraint> allConstraints = new HashSet<>();
 
-        // Restriction 1: build several equations such us x1 + x2 + x3 + ... + xn = joltages[i]
+        // Restriction: build several equations such us x1 + x2 + x3 + ... + xn = joltages[i]
         for(int joltageIndex = 0; joltageIndex < joltages.size(); joltageIndex++) {
 
             double[] constraintsCoefficients = new double[buttons.size()];
@@ -141,21 +138,9 @@ public class Machine {
         PointValuePair pointValuePair = solver.optimize(objectiveFunction,
                                 linearConstraintSet,
                                 GoalType.MINIMIZE,
-                                new NonNegativeConstraint(true),
-                                PivotSelectionRule.BLAND); // Default DANTZIG
+                                new NonNegativeConstraint(true)); // For every xi, xy >= 0
 
-
-        double[] first =  pointValuePair.getFirst();
-        double second = pointValuePair.getSecond();
-
-        long roundFirst = 0;
-        for(double value : first) {
-            roundFirst += (long) Math.round(value);
-        }
-        return roundFirst;
-
-        //return (long) Math.round(pointValuePair.getValue());
-
+        return Math.round(pointValuePair.getValue());
 
     }
 
@@ -169,6 +154,7 @@ public class Machine {
         // Variables definition
         Map<Integer, Variable> createdVariables = new HashMap<>();
 
+        // Objetive function: Minimize Z = x1 + x2 + ... + xn
         for (int i = 0; i < buttons.size(); i++) {
             // Define the variable
             Variable var = model.addVariable("x" + i).integer(true).lower(0).weight(1); // This weight(1) was really needed
