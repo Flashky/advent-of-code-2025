@@ -2,13 +2,8 @@ package com.adventofcode.flashk.day10;
 
 import module java.base;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 
 import com.adventofcode.flashk.common.test.constants.TestDisplayName;
 import com.adventofcode.flashk.common.test.constants.TestFilename;
@@ -16,12 +11,10 @@ import com.adventofcode.flashk.common.test.constants.TestFolder;
 import com.adventofcode.flashk.common.test.constants.TestTag;
 import com.adventofcode.flashk.common.test.utils.Input;
 
-import static java.lang.IO.println;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_10)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day10Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_10;
@@ -36,7 +29,10 @@ class Day10Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Factory factory = new Factory(inputs);
+        long result = factory.solveA();
+
+		assertEquals(7L,result);
 	}
 
 	@Test
@@ -49,8 +45,10 @@ class Day10Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        Factory factory = new Factory(inputs);
+        long result = factory.solveA();
+
+		assertEquals(512L,result);
 
 	}
 
@@ -64,7 +62,10 @@ class Day10Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Factory factory = new Factory(inputs);
+        long result = factory.solveB();
+
+		assertEquals(33L, result);
 	}
 
 	@Test
@@ -77,8 +78,10 @@ class Day10Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        Factory factory = new Factory(inputs);
+        long result = factory.solveB();
+
+		assertEquals(19857L,result);
 
 	}
 }

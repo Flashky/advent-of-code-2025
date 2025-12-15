@@ -19,6 +19,9 @@
 		<commons-lang3.version>3.20.0</commons-lang3.version>
 		<commons-math3.version>3.6.1</commons-math3.version>
 
+		<!-- Math -->
+		<ojalgo.version>56.1.1</ojalgo.version>
+
 		<!-- JSON Management -->
 		<jackson-databind.version>2.20.1</jackson-databind.version>
 		<gson.version>2.13.2</gson.version>
@@ -69,6 +72,13 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
 			<version>${commons-math3.version}</version>
+		</dependency>
+
+		<!-- Math libraries -->
+		<dependency>
+			<groupId>org.ojalgo</groupId>
+			<artifactId>ojalgo</artifactId>
+			<version>${ojalgo.version}</version>
 		</dependency>
 
 		<!-- JSON management -->
