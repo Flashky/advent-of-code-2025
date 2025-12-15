@@ -81,6 +81,7 @@
 			<artifactId>ojalgo</artifactId>
 			<version>${ojalgo.version}</version>
 		</dependency>
+
 		<!-- JSON management -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
