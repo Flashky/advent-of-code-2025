@@ -3,12 +3,21 @@ package com.adventofcode.flashk.day10;
 import static java.lang.IO.println;
 
 import module java.base;
-import com.google.ortools.linearsolver.MPConstraint;
-import com.google.ortools.linearsolver.MPObjective;
-import com.google.ortools.linearsolver.MPSolver;
-import com.google.ortools.linearsolver.MPVariable;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.math3.util.Combinations;
+
+import org.apache.commons.math3.optim.PointValuePair;
+import org.apache.commons.math3.optim.linear.LinearConstraint;
+import org.apache.commons.math3.optim.linear.LinearConstraintSet;
+import org.apache.commons.math3.optim.linear.LinearObjectiveFunction;
+import org.apache.commons.math3.optim.linear.NonNegativeConstraint;
+import org.apache.commons.math3.optim.linear.Relationship;
+import org.apache.commons.math3.optim.linear.SimplexSolver;
+import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
+import org.ojalgo.optimisation.Expression;
+import org.ojalgo.optimisation.ExpressionsBasedModel;
+import org.ojalgo.optimisation.Optimisation;
+import org.ojalgo.optimisation.Variable;
+
+import java.util.List;
 
 public class Machine {
 
@@ -17,9 +26,7 @@ public class Machine {
 
     private final boolean[] expectedLights;
     private final List<Button> buttons = new ArrayList<>();
-    private final List<Integer> joltages = new ArrayList<>();
-    private final int[] expectedJoltages;
-    private int joltageNumber;
+    private final List<Long> joltages = new ArrayList<>();
 
     public Machine(String input) {
 
@@ -44,13 +51,12 @@ public class Machine {
         if(joltageMatcher.find()) {
             String group = joltageMatcher.group(1);
             String[] numbers = group.split(",");
+            //StringBuilder joltageNumberBuilder = new StringBuilder();
+
             for(String number : numbers) {
-                joltageNumber = Integer.parseInt(group.replace(",", StringUtils.EMPTY));
-                joltages.add(Integer.parseInt(number));
+                joltages.add(Long.parseLong(number));
             }
         }
-
-        expectedJoltages = joltages.stream().mapToInt(Integer::intValue).toArray();
     }
 
     public long findMinimumPressesLight() {
@@ -104,223 +110,119 @@ public class Machine {
     }
 
     public long findMinimumPressesJoltage() {
-        long result = Long.MAX_VALUE;
-
-        Set<Set<Button>> buttonCombinations = getCombinations();
-/*
-        for(Set<Button> buttonCombination : buttonCombinations) {
-            // Solve Linear Algebra
-            long equationResult = solveEquations(buttonCombination);
-            if(equationResult < result) {
-                result = equationResult;
-            }
-        }
-*/
-        return result;
-    }
-
-    private long solveEquations(Set<Button> buttonCombination) {
-        String modelName = "my_model";
-        String solverId = "CBC_MIXED_INTEGER_PROGRAMMING";
-        MPSolver solver = MPSolver.createSolver(solverId);
-
-        //MPVariable x = solver.makeIntVar(0, Double.POSITIVE_INFINITY, "x");
-        //MPVariable x = solver.makeIntVar(0, Double.POSITIVE_INFINITY, "x");
-
-        MPVariable variables[] = solver.makeIntVarArray(buttonCombination.size(), 0,Double.POSITIVE_INFINITY);
-
-        // Constraints (constantes)
-
-        MPConstraint c1 = solver.makeConstraint(joltageNumber, joltageNumber, "my_equation");
-
-        Map<Button, MPVariable> variablePerButton = new HashMap<>();
-        int buttonIndex = 0;
-        for(Button button : buttonCombination) {
-            c1.setCoefficient(variables[buttonIndex], button.getMultiplier());
-            variablePerButton.put(button,variables[buttonIndex]);
-        }
-
-        // Función objetivo
-        MPObjective objective = solver.objective();
-        for(MPVariable variable : variables ){
-            objective.setCoefficient(variable, 1);
-        }
-
-        final MPSolver.ResultStatus resultStatus = solver.solve();
-
-        if (resultStatus != MPSolver.ResultStatus.OPTIMAL) {
-            // There is a solution
-            return Long.MAX_VALUE;
-        }
-
-        long result = 0;
-        for(Button button : variablePerButton.keySet()) {
-            result += (long) (button.getMultiplier() * variablePerButton.get(button).solutionValue());
-        }
+        long result = ojAlgo();
 
         return result;
     }
-    /*
-    private long solveEquations(Set<Button> buttonCombination) {
 
-        // Obtain coefficients. Each button has a coefficient
-        double[] coefficients1 = new double[buttonCombination.size()];
 
-        int buttonIndex = 0;
-        for(Button button : buttonCombination) {
-            coefficients1[buttonIndex++] = button.getMultiplier();
-        }
+    private long simplex() {
 
-        RealMatrix coefficients = MatrixUtils.createRealMatrix(new double[][] { coefficients1 });
+        // Objetive function
+        double[] objectiveCoefficients = new double[buttons.size()];
+        Arrays.fill(objectiveCoefficients, 1);
+        LinearObjectiveFunction objectiveFunction = new LinearObjectiveFunction(objectiveCoefficients, 0);
 
-        // Obtain constants
-        double[] joltageNumbers = { joltageNumber };
+        Set<LinearConstraint> allConstraints = new HashSet<>();
 
-        RealVector constants = new ArrayRealVector(joltageNumbers, false);
+        // Restriction 1: build several equations such us x1 + x2 + x3 + ... + xn = joltages[i]
+        for(int joltageIndex = 0; joltageIndex < joltages.size(); joltageIndex++) {
 
-        // Obtain solver
-        // SVD (SingularValueDecomposition (SVD) is designed for matrixes of any size
-        DecompositionSolver solver = new SingularValueDecomposition(coefficients).getSolver();
+            double[] constraintsCoefficients = new double[buttons.size()];
 
-        // Finally, solve by constants
-        RealVector solution = solver.solve(constants);
-
-        if(solution.isNaN()) {
-            return Long.MAX_VALUE;
-        }
-
-        long result = 0;
-        for(int i = 0; i < buttonCombination.size(); i++) {
-            int roundedResult = (int) Math.ceil(solution.getEntry(i));
-            result += roundedResult;
-        }
-
-        return result;
-
-    }*/
-
-    /*
-    public long findMinimumPressesJoltage() {
-        long buttonPresses = Long.MAX_VALUE;
-
-        // Solve via BFS
-
-        // Initial light status: no button presses and all lights are off
-        JoltageStatus root = new JoltageStatus(0, new int[joltages.size()]);
-
-        // Add root to the queue
-        Queue<JoltageStatus> joltageStatusQue = new ArrayDeque<>();
-        joltageStatusQue.add(root);
-
-        // Mark root as visited
-        Set<Integer> visitedStatuses = new HashSet<>();
-        visitedStatuses.add(Arrays.hashCode(root.counters()));
-
-        while(!joltageStatusQue.isEmpty()) {
-            JoltageStatus currentJoltageStatus = joltageStatusQue.poll();
-
-            // Exit condition
-            if(isSolution(currentJoltageStatus.counters())) {
-                return currentJoltageStatus.numberOfPresses();
-            }
-
-            // Generate next level of the tree
-            int currentPresses = currentJoltageStatus.numberOfPresses();
-            int[] currentJoltages = currentJoltageStatus.counters();
-
-            for(Button button : buttons) {
-
-                int[] newJoltages = button.press(currentJoltages);
-
-                int statusHashCode = Arrays.hashCode(newJoltages);
-
-                // Prune joltages if they are greated than the max allowed
-                if((!visitedStatuses.contains(statusHashCode)) && (isValidJoltage(newJoltages))) {
-                    JoltageStatus newJoltageStatus = new JoltageStatus(currentPresses+1, newJoltages);
-                    visitedStatuses.add(statusHashCode);
-                    joltageStatusQue.add(newJoltageStatus);
+            for(int buttonIndex = 0; buttonIndex < buttons.size(); buttonIndex++) {
+                Button button = buttons.get(buttonIndex);
+                if(button.getToggles().contains(joltageIndex)) {
+                    constraintsCoefficients[buttonIndex]++;
                 }
-
             }
 
+            allConstraints.add(new LinearConstraint(constraintsCoefficients, Relationship.EQ, joltages.get(joltageIndex)));
         }
 
-        return buttonPresses;
-    }
-*/
-    /*
-    public long findMinimumPressesJoltageRecursive() {
-        return findMinimumPressesJoltageRecursive(0, new int[joltages.size()]);
+        // Build the constraint set
+        LinearConstraintSet linearConstraintSet = new LinearConstraintSet(allConstraints);
+
+        SimplexSolver solver = new SimplexSolver();
+
+        PointValuePair pointValuePair = solver.optimize(objectiveFunction,
+                                linearConstraintSet,
+                                GoalType.MINIMIZE,
+                                new NonNegativeConstraint(true));
+
+        return (long) Math.ceil(pointValuePair.getValue());
+
     }
 
-    private long findMinimumPressesJoltageRecursive(int numberPresses, int[] counters) {
 
-        if(isSolution(counters)) {
-            return numberPresses;
-        } else if(!isValidJoltage(counters)) {
-            return Long.MAX_VALUE;
+    private long ojAlgo() {
+        long result  = 0;
+        ExpressionsBasedModel model = new ExpressionsBasedModel();
+
+        Expression objective = model.objective();
+
+        // Variables definition
+        Map<Integer, Variable> createdVariables = new HashMap<>();
+
+        for (int i = 0; i < buttons.size(); i++) {
+            // Define the variable
+            Variable var = model.addVariable("x" + i).integer(true).lower(0);
+
+            // Add variable to objective function
+            objective.set(var, 1.0);
+
+            // Save it in the map to reuse it at restrictions
+            createdVariables.put(i, var);
         }
 
-        long minimumPreses = Long.MAX_VALUE;
+        for(int joltageIndex = 0; joltageIndex < joltages.size(); joltageIndex++) {
 
-        for(Button button: buttons) {
-            int[] counterUpdate = button.press(counters);
-            long currentPresses = findMinimumPressesJoltageRecursive(numberPresses+1, counterUpdate);
-            if(currentPresses < minimumPreses) {
-                minimumPreses = currentPresses;
-            }
-        }
+            //final BigDecimal MIN_SUM = new BigDecimal(19830); // x1 + x2 + ... >= 19835 (de 19834 + 1)
+            //final BigDecimal MAX_SUM = new BigDecimal(19885); // x1 + x2 + ... <= 19877 (de 19878 - 1)
+            //BigDecimal joltageValue = BigDecimal.valueOf(joltages.get(joltageIndex));
 
-        return minimumPreses;
+            Expression linearRestrictionJoltage = model.addExpression("j"+joltageIndex)
+                                                        .level(joltages.get(joltageIndex));
 
-    }
+            //final BigDecimal TOLERANCIA_JOLTAGE = BigDecimal.ONE;
+            //long joltageLongValue = joltages.get(joltageIndex);
+            // Conversión a BigDecimal
+            //BigDecimal joltageValue = BigDecimal.valueOf(joltageLongValue);
+            //linearRestrictionJoltage.lower(joltageValue.subtract(TOLERANCIA_JOLTAGE));
+            //linearRestrictionJoltage.upper(joltageValue.add(TOLERANCIA_JOLTAGE));
 
-     */
-
-
-    private boolean isValidJoltage(int[] newJoltages) {
-        for(int i = 0; i < newJoltages.length; i++) {
-            if(newJoltages[i] > expectedJoltages[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isSolution(int[] outputJoltages) {
-        return Arrays.equals(expectedJoltages, outputJoltages);
-    }
-
-    private Set<Set<Button>> getCombinations() {
-        Set<Set<Button>> result = new HashSet<>();
-
-        for(int buttonsNumber = 1; buttonsNumber <= buttons.size(); buttonsNumber++) {
-            Combinations combinations = new Combinations(buttons.size(), buttonsNumber);
-            Iterator<int[]> iterator = combinations.iterator();
-            while(iterator.hasNext()) {
-                Set<Button> combination = new HashSet<>();
-                int[] buttonIndexes = iterator.next();
-                for(int buttonIndex : buttonIndexes) {
-                    combination.add(buttons.get(buttonIndex));
+            for(int buttonIndex = 0; buttonIndex < buttons.size(); buttonIndex++) {
+                Button button = buttons.get(buttonIndex);
+                if(button.getToggles().contains(joltageIndex)) {
+                    Variable variable = createdVariables.get(buttonIndex);
+                    linearRestrictionJoltage.set(variable, 1);
                 }
-                result.add(combination);
             }
+
+            }
+        /*
+        Expression sumExpression = model.addExpression("TotalPressesSum").upper(19877);
+        for (Variable var : createdVariables.values()) {
+            sumExpression.set(var, 1);
+        }*/
+
+        //model.limitObjective(new BigDecimal(19817), new BigDecimal(19878));
+        ExpressionsBasedModel.Description description = model.describe();
+        Optimisation.Result modelResult = model.minimise();
+
+
+
+        for(int j = 0; j < buttons.size(); j++) {
+            result += (long) Math.round(modelResult.get(j).doubleValue());
         }
 
+        // longValue : 19859
+        // Math.floor: 19859
+        // Math.round: 19878
+        // Math.ceil : 19891
+
+        // longValueExact -> error
         return result;
-
-    }
-    private Set<List<Button>> getButtonCombinations() {
-
-        Set<List<Button>> combinations = new HashSet<>();
-
-        for(int buttonsNumber = 1; buttonsNumber <= buttons.size(); buttonsNumber++) {
-            combinations.addAll(buttons.stream()
-                    .gather(Gatherers.windowSliding(buttonsNumber))
-                    .collect(Collectors.toSet()));
-        }
-
-        return combinations;
     }
 
 

@@ -69,7 +69,6 @@ class Day10Test {
 		assertEquals(33L, result);
 	}
 
-    @Disabled
 	@Test
 	@Order(4)
 	@Tag(TestTag.PART_2)
@@ -84,6 +83,17 @@ class Day10Test {
         long result = factory.solveB();
 
 		println("Solution: " + result);
+
+		// Apache SimplexSolver
+		// longValue:  19817 -> Too low
+		// Math.ceil:  19834 -> Too low
+
+		// OjAlgo:
+		// longValue : 19859 -> That's not the right answer
+		// Math.floor: 19859 -> That's not the right answer
+		// Math.round: 19878 -> Too high
+		// Math.ceil : 19891 -> Too High
+
 		assertEquals(0L,0L);
 
 	}
