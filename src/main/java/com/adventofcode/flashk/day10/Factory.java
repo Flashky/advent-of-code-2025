@@ -11,10 +11,10 @@ public class Factory {
     }
 
     public long solveA() {
-        return machines.stream().map(Machine::findMinimumPressesLight).mapToLong(Long::longValue).sum();
+        return machines.stream().mapToLong(Machine::findMinimumPressesLight).sum();
     }
 
     public long solveB() {
-        return machines.stream().map(Machine::findMinimumPressesJoltage).mapToLong(Long::longValue).sum();
+        return machines.stream().mapToLong(Machine::findMinimumPressesJoltage).sum();
     }
 }

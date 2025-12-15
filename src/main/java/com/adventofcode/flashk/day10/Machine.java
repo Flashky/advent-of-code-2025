@@ -34,7 +34,7 @@ public class Machine {
 
         // Buttons
         for(int i = 1; i < splittedInput.length - 1; i++) {
-            buttons.add(new Button(splittedInput[i], expectedLights.length));
+            buttons.add(new Button(splittedInput[i]));
         }
 
         // Joltage
@@ -184,7 +184,7 @@ public class Machine {
         Optimisation.Result modelResult = model.minimise();
 
         for(int j = 0; j < buttons.size(); j++) {
-            result += (long) Math.round(modelResult.get(j).doubleValue());
+            result += Math.round(modelResult.get(j).doubleValue());
         }
 
 
