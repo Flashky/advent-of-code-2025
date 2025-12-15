@@ -2,9 +2,6 @@ package com.adventofcode.flashk.day10;
 
 import module java.base;
 
-import org.apache.commons.math3.optim.PointValuePair;
-import org.apache.commons.math3.optim.linear.*;
-import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.ojalgo.optimisation.Expression;
 import org.ojalgo.optimisation.ExpressionsBasedModel;
 import org.ojalgo.optimisation.Optimisation;
@@ -103,47 +100,6 @@ public class Machine {
     public long findMinimumPressesJoltage() {
         return simplexOjAlgo();
     }
-
-
-    // TODO couldn't make this work, but I don't want to throw it away...
-    private long simplexMath3() {
-
-        // Objetive function: Minimize Z = x1 + x2 + ... + xn
-        double[] objectiveCoefficients = new double[buttons.size()];
-        Arrays.fill(objectiveCoefficients, 1);
-        LinearObjectiveFunction objectiveFunction = new LinearObjectiveFunction(objectiveCoefficients, 0);
-
-        Set<LinearConstraint> allConstraints = new HashSet<>();
-
-        // Restriction: build several equations such us x1 + x2 + x3 + ... + xn = joltages[i]
-        for(int joltageIndex = 0; joltageIndex < joltages.size(); joltageIndex++) {
-
-            double[] constraintsCoefficients = new double[buttons.size()];
-
-            for(int buttonIndex = 0; buttonIndex < buttons.size(); buttonIndex++) {
-                Button button = buttons.get(buttonIndex);
-                if(button.getToggles().contains(joltageIndex)) {
-                    constraintsCoefficients[buttonIndex]++;
-                }
-            }
-
-            allConstraints.add(new LinearConstraint(constraintsCoefficients, Relationship.EQ, joltages.get(joltageIndex)));
-        }
-
-        // Build the constraint set
-        LinearConstraintSet linearConstraintSet = new LinearConstraintSet(allConstraints);
-
-        SimplexSolver solver = new SimplexSolver();
-
-        PointValuePair pointValuePair = solver.optimize(objectiveFunction,
-                                linearConstraintSet,
-                                GoalType.MINIMIZE,
-                                new NonNegativeConstraint(true)); // For every xi, xy >= 0
-
-        return Math.round(pointValuePair.getValue());
-
-    }
-
 
     private long simplexOjAlgo() {
         long result  = 0;
