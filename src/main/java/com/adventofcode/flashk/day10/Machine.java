@@ -14,7 +14,7 @@ public class Machine {
     private static final char ON = '#';
     private static final Pattern JOLTAGE_PATTERN = Pattern.compile("\\{([^}]+)}");
 
-    private final boolean[] expectedLights;
+    private boolean[] expectedLights;
     private final List<Button> buttons = new ArrayList<>();
     private List<Long> joltages = new ArrayList<>();
 
@@ -22,19 +22,15 @@ public class Machine {
 
         String[] splittedInput = input.split(" ");
 
-        // Lights
-        char[] lightChars = splittedInput[0].toCharArray();
-        expectedLights = new boolean[lightChars.length-2];
-        for(int i = 1; i < lightChars.length-1; i++) {
-            expectedLights[i-1] = (lightChars[i] == ON);
-        }
+        parseLights(splittedInput[0]);
+        parseButtons(splittedInput);
+        parseJoltages(splittedInput);
 
-        // Buttons
-        for(int i = 1; i < splittedInput.length - 1; i++) {
-            buttons.add(new Button(splittedInput[i]));
-        }
 
-        // Joltage
+    }
+
+    private void parseJoltages(String[] splittedInput) {
+
         String joltageInput = splittedInput[splittedInput.length-1];
 
         Matcher joltageMatcher = JOLTAGE_PATTERN.matcher(joltageInput);
@@ -44,7 +40,20 @@ public class Machine {
             joltages = Arrays.stream(numbers).mapToLong(Long::parseLong).boxed().toList();
         }
 
+    }
 
+    private void parseLights(String lightInput) {
+        char[] lightChars = lightInput.toCharArray();
+        expectedLights = new boolean[lightChars.length-2];
+        for(int i = 1; i < lightChars.length-1; i++) {
+            expectedLights[i-1] = (lightChars[i] == ON);
+        }
+    }
+
+    private void parseButtons(String[] splittedInput) {
+        for(int i = 1; i < splittedInput.length - 1; i++) {
+            buttons.add(new Button(splittedInput[i]));
+        }
     }
 
     public long findMinimumPressesLight() {

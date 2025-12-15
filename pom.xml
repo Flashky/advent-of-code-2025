@@ -118,7 +118,7 @@
 			<version>${jetbrains-annotations.version}</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 	</dependencies>
 
 	<build>
