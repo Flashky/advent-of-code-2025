@@ -23,6 +23,22 @@ public class Array2DUtil {
         return transposedArray;
     }
 
+    /// Transposes the given 2D array
+    /// @param array the array to rotate
+    /// @return a new 2D char array that is rotated 90º respect of the given array.
+    ///
+    public static char[][] rotate(char[][] array) {
+        int rows = array.length;
+        int cols = array[0].length;
+        char[][] rotatedArray = new char[cols][rows];
+        for(int row = 0; row < rows; row++) {
+            for(int col = 0; col < cols; col++) {
+                rotatedArray[col][rows-1-row] = array[row][col];
+            }
+        }
+        return rotatedArray;
+    }
+
     /// Paints the given 2D array.
     /// @param map the array to paint.
     public static void paint(char[][] map) {

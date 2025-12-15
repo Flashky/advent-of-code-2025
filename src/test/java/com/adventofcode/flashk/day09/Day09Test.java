@@ -2,13 +2,8 @@ package com.adventofcode.flashk.day09;
 
 import module java.base;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 
 import com.adventofcode.flashk.common.test.constants.TestDisplayName;
 import com.adventofcode.flashk.common.test.constants.TestFilename;
@@ -16,12 +11,10 @@ import com.adventofcode.flashk.common.test.constants.TestFolder;
 import com.adventofcode.flashk.common.test.constants.TestTag;
 import com.adventofcode.flashk.common.test.utils.Input;
 
-import static java.lang.IO.println;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_09)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day09Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_09;
@@ -36,7 +29,10 @@ class Day09Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+		MovieTheater movieTheater = new MovieTheater(inputs);
+        long result = movieTheater.solveA();
+
+		assertEquals(50L,result);
 	}
 
 	@Test
@@ -49,8 +45,10 @@ class Day09Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+		MovieTheater movieTheater = new MovieTheater(inputs);
+        long result = movieTheater.solveA();
+
+		assertEquals(4754955192L,result);
 
 	}
 
@@ -64,7 +62,11 @@ class Day09Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        //MovieTheaterPolygon2 movieTheater = new MovieTheaterPolygon2(inputs);
+		MovieTheater movieTheater = new MovieTheater(inputs);
+        long result = movieTheater.solveB();
+
+		assertEquals(24L,result);
 	}
 
 	@Test
@@ -77,8 +79,10 @@ class Day09Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+		MovieTheater movieTheater = new MovieTheater(inputs);
+        long result = movieTheater.solveB();
+
+		assertEquals(1568849600L,result);
 
 	}
 

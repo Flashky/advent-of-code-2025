@@ -2,7 +2,6 @@ package com.adventofcode.flashk.day11;
 
 import module java.base;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -16,12 +15,10 @@ import com.adventofcode.flashk.common.test.constants.TestFolder;
 import com.adventofcode.flashk.common.test.constants.TestTag;
 import com.adventofcode.flashk.common.test.utils.Input;
 
-import static java.lang.IO.println;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_11)
 @TestMethodOrder(OrderAnnotation.class)
-@Disabled // TODO Remove comment when implemented
 class Day11Test {
 
 	private static final String INPUT_FOLDER = TestFolder.DAY_11;
@@ -36,7 +33,10 @@ class Day11Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		assertEquals(0L,0L);
+        Reactor reactor = new Reactor(inputs);
+        long result = reactor.solveA();
+
+		assertEquals(5L,result);
 	}
 
 	@Test
@@ -49,8 +49,10 @@ class Day11Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        Reactor reactor = new Reactor(inputs);
+        long result = reactor.solveA();
+
+		assertEquals(506L,result);
 
 	}
 
@@ -62,9 +64,12 @@ class Day11Test {
 	void part2SampleTest() {
 
 		// Read input file
-		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
+		List<String> inputs = Input.readStringLines(INPUT_FOLDER, "sample_2.txt");
 
-		assertEquals(0L,0L);
+        ReactorJGrapht reactor = new ReactorJGrapht(inputs);
+        long result = reactor.solveB(true);
+
+		assertEquals(2L,result);
 	}
 
 	@Test
@@ -77,8 +82,10 @@ class Day11Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		println("Solution: ");
-		assertEquals(0L,0L);
+        ReactorJGrapht reactor = new ReactorJGrapht(inputs);
+        long result = reactor.solveB(false);
+
+		assertEquals(385912350172800L,result);
 
 	}
 
