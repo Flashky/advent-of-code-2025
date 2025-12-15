@@ -12,7 +12,7 @@ import java.util.List;
 public class Machine {
 
     private static final char ON = '#';
-    private static final Pattern JOLTAGE_PATTERN = Pattern.compile("\\{([^)]+)}");
+    private static final Pattern JOLTAGE_PATTERN = Pattern.compile("\\{([^}]+)}");
 
     private final boolean[] expectedLights;
     private final List<Button> buttons = new ArrayList<>();
