@@ -39,7 +39,6 @@
 		<maven.compiler.release>25</maven.compiler.release>
 		<jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
 
-
 	</properties>
 
 	<dependencies>

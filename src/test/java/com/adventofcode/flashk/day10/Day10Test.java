@@ -81,17 +81,6 @@ class Day10Test {
         Factory factory = new Factory(inputs);
         long result = factory.solveB();
 
-
-		// Apache SimplexSolver
-		// longValue:   19817 -> Too low
-        // Math.round:  19829 -> No ejecutado, pero too low
-		// Math.ceil:   19834 -> Too low
-        // Pivot BLAND: 19847 -> That's not the right answer
-        // round first: 19854 -> That's not the right answer
-
-		// OjAlgo:
-        // weight(1) : 19857
-
 		assertEquals(19857L,result);
 
 	}
