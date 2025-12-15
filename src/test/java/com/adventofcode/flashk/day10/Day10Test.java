@@ -89,10 +89,8 @@ class Day10Test {
         // Pivot BLAND: 19847 -> That's not the right answer
         // round first: 19854 -> That's not the right answer
 
-
 		// OjAlgo:
         // weight(1) : 19857
-
 
 		assertEquals(19857L,result);
 
