@@ -1,16 +1,9 @@
 package com.adventofcode.flashk.day10;
 
-import static java.lang.IO.println;
-
 import module java.base;
 
 import org.apache.commons.math3.optim.PointValuePair;
-import org.apache.commons.math3.optim.linear.LinearConstraint;
-import org.apache.commons.math3.optim.linear.LinearConstraintSet;
-import org.apache.commons.math3.optim.linear.LinearObjectiveFunction;
-import org.apache.commons.math3.optim.linear.NonNegativeConstraint;
-import org.apache.commons.math3.optim.linear.Relationship;
-import org.apache.commons.math3.optim.linear.SimplexSolver;
+import org.apache.commons.math3.optim.linear.*;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.ojalgo.optimisation.Expression;
 import org.ojalgo.optimisation.ExpressionsBasedModel;
@@ -51,12 +44,13 @@ public class Machine {
         if(joltageMatcher.find()) {
             String group = joltageMatcher.group(1);
             String[] numbers = group.split(",");
-            //StringBuilder joltageNumberBuilder = new StringBuilder();
 
             for(String number : numbers) {
                 joltages.add(Long.parseLong(number));
             }
         }
+
+
     }
 
     public long findMinimumPressesLight() {
@@ -110,13 +104,12 @@ public class Machine {
     }
 
     public long findMinimumPressesJoltage() {
-        long result = ojAlgo();
-
-        return result;
+        return simplexOjAlgo();
     }
 
 
-    private long simplex() {
+    // TODO couldn't make this work, but I don't want to throw it away...
+    private long simplexMath3() {
 
         // Objetive function
         double[] objectiveCoefficients = new double[buttons.size()];
@@ -148,14 +141,26 @@ public class Machine {
         PointValuePair pointValuePair = solver.optimize(objectiveFunction,
                                 linearConstraintSet,
                                 GoalType.MINIMIZE,
-                                new NonNegativeConstraint(true));
+                                new NonNegativeConstraint(true),
+                                PivotSelectionRule.BLAND); // Default DANTZIG
 
-        return (long) Math.ceil(pointValuePair.getValue());
+
+        double[] first =  pointValuePair.getFirst();
+        double second = pointValuePair.getSecond();
+
+        long roundFirst = 0;
+        for(double value : first) {
+            roundFirst += (long) Math.round(value);
+        }
+        return roundFirst;
+
+        //return (long) Math.round(pointValuePair.getValue());
+
 
     }
 
 
-    private long ojAlgo() {
+    private long simplexOjAlgo() {
         long result  = 0;
         ExpressionsBasedModel model = new ExpressionsBasedModel();
 
@@ -166,7 +171,7 @@ public class Machine {
 
         for (int i = 0; i < buttons.size(); i++) {
             // Define the variable
-            Variable var = model.addVariable("x" + i).integer(true).lower(0);
+            Variable var = model.addVariable("x" + i).integer(true).lower(0).weight(1); // This weight(1) was really needed
 
             // Add variable to objective function
             objective.set(var, 1.0);
@@ -177,19 +182,8 @@ public class Machine {
 
         for(int joltageIndex = 0; joltageIndex < joltages.size(); joltageIndex++) {
 
-            //final BigDecimal MIN_SUM = new BigDecimal(19830); // x1 + x2 + ... >= 19835 (de 19834 + 1)
-            //final BigDecimal MAX_SUM = new BigDecimal(19885); // x1 + x2 + ... <= 19877 (de 19878 - 1)
-            //BigDecimal joltageValue = BigDecimal.valueOf(joltages.get(joltageIndex));
-
             Expression linearRestrictionJoltage = model.addExpression("j"+joltageIndex)
                                                         .level(joltages.get(joltageIndex));
-
-            //final BigDecimal TOLERANCIA_JOLTAGE = BigDecimal.ONE;
-            //long joltageLongValue = joltages.get(joltageIndex);
-            // Conversión a BigDecimal
-            //BigDecimal joltageValue = BigDecimal.valueOf(joltageLongValue);
-            //linearRestrictionJoltage.lower(joltageValue.subtract(TOLERANCIA_JOLTAGE));
-            //linearRestrictionJoltage.upper(joltageValue.add(TOLERANCIA_JOLTAGE));
 
             for(int buttonIndex = 0; buttonIndex < buttons.size(); buttonIndex++) {
                 Button button = buttons.get(buttonIndex);
@@ -199,31 +193,16 @@ public class Machine {
                 }
             }
 
-            }
-        /*
-        Expression sumExpression = model.addExpression("TotalPressesSum").upper(19877);
-        for (Variable var : createdVariables.values()) {
-            sumExpression.set(var, 1);
-        }*/
+        }
 
-        //model.limitObjective(new BigDecimal(19817), new BigDecimal(19878));
-        ExpressionsBasedModel.Description description = model.describe();
         Optimisation.Result modelResult = model.minimise();
-
-
 
         for(int j = 0; j < buttons.size(); j++) {
             result += (long) Math.round(modelResult.get(j).doubleValue());
         }
 
-        // longValue : 19859
-        // Math.floor: 19859
-        // Math.round: 19878
-        // Math.ceil : 19891
 
-        // longValueExact -> error
         return result;
     }
-
 
 }

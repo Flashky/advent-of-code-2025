@@ -11,7 +11,6 @@ import com.adventofcode.flashk.common.test.constants.TestFolder;
 import com.adventofcode.flashk.common.test.constants.TestTag;
 import com.adventofcode.flashk.common.test.utils.Input;
 
-import static java.lang.IO.println;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName(TestDisplayName.DAY_10)
@@ -82,19 +81,20 @@ class Day10Test {
         Factory factory = new Factory(inputs);
         long result = factory.solveB();
 
-		println("Solution: " + result);
 
 		// Apache SimplexSolver
-		// longValue:  19817 -> Too low
-		// Math.ceil:  19834 -> Too low
+		// longValue:   19817 -> Too low
+        // Math.round:  19829 -> No ejecutado, pero too low
+		// Math.ceil:   19834 -> Too low
+        // Pivot BLAND: 19847 -> That's not the right answer
+        // round first: 19854 -> That's not the right answer
+
 
 		// OjAlgo:
-		// longValue : 19859 -> That's not the right answer
-		// Math.floor: 19859 -> That's not the right answer
-		// Math.round: 19878 -> Too high
-		// Math.ceil : 19891 -> Too High
+        // weight(1) : 19857
 
-		assertEquals(0L,0L);
+
+		assertEquals(19857L,result);
 
 	}
 }
