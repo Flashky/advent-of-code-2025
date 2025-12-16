@@ -95,21 +95,21 @@ public class MovieTheater {
 
             switch(currentEvent.getType()) {
                 case START:
-                    yCoordinates.add(currentEvent.getSegment().getLeft().y());
+                    yCoordinates.add(currentEvent.getSegment().getMinY());
                     break;
                 case END:
-                    yCoordinates.remove(currentEvent.getSegment().getLeft().y());
+                    yCoordinates.remove(currentEvent.getSegment().getMinY());
 
                     // Check square segments
                     isValid = hasCeiling(yCoordinates, squareHigherY) && hasFloor(yCoordinates, squareLowerY);
 
                     break;
                 case START_SQ_HIGHER:
-                    squareHigherY = currentEvent.getSegment().getLeft().y();
+                    squareHigherY = currentEvent.getSegment().getMinY();
                     isValid = hasCeiling(yCoordinates, squareHigherY);
                     break;
                 case START_SQ_LOWER:
-                    squareLowerY = currentEvent.getSegment().getLeft().y();
+                    squareLowerY = currentEvent.getSegment().getMinY();
                     isValid = hasFloor(yCoordinates, squareLowerY);
                     break;
                 case END_SQ_HIGHER:
@@ -157,20 +157,20 @@ public class MovieTheater {
 
         // Upper segment
         Segment1D higherSegment = new Segment1D(new Point(minX,maxY), new Point(maxX, maxY));
-        events.add(new Event1D(higherSegment.getLeft().x(), higherSegment, EventType1D.START_SQ_HIGHER));
-        events.add(new Event1D(higherSegment.getRight().x(), higherSegment, EventType1D.END_SQ_HIGHER));
+        events.add(new Event1D(higherSegment.getMinX(), higherSegment, EventType1D.START_SQ_HIGHER));
+        events.add(new Event1D(higherSegment.getMaxX(), higherSegment, EventType1D.END_SQ_HIGHER));
 
         // Lower segment
         Segment1D lowerSegment = new Segment1D(new Point(minX,minY), new Point(maxX, minY));
         if(!higherSegment.equals(lowerSegment)) {
-            events.add(new Event1D(lowerSegment.getLeft().x(), lowerSegment, EventType1D.START_SQ_LOWER));
-            events.add(new Event1D(lowerSegment.getRight().x(), lowerSegment, EventType1D.END_SQ_LOWER));
+            events.add(new Event1D(lowerSegment.getMinX(), lowerSegment, EventType1D.START_SQ_LOWER));
+            events.add(new Event1D(lowerSegment.getMaxX(), lowerSegment, EventType1D.END_SQ_LOWER));
         }
 
         // Polygon segments
         for(Segment1D segment : horizontalSegments) {
-            events.add(new Event1D(segment.getLeft().x(), segment, EventType1D.START));
-            events.add(new Event1D(segment.getRight().x(), segment, EventType1D.END));
+            events.add(new Event1D(segment.getMinX(), segment, EventType1D.START));
+            events.add(new Event1D(segment.getMaxX(), segment, EventType1D.END));
         }
 
         return events;
@@ -195,21 +195,21 @@ public class MovieTheater {
 
             switch(currentEvent.getType()) {
                 case START:
-                    xCoordinates.add(currentEvent.getSegment().getUp().x());
+                    xCoordinates.add(currentEvent.getSegment().getMinX()); // getUp.x()
                     break;
                 case END:
-                    xCoordinates.remove(currentEvent.getSegment().getUp().x());
+                    xCoordinates.remove(currentEvent.getSegment().getMinX());
 
                     isValid = hasCeiling(xCoordinates, squareHigherX) && hasFloor(xCoordinates, squareLowerX);
 
                     break;
                 case START_SQ_HIGHER:
-                    squareHigherX = currentEvent.getSegment().getUp().x();
+                    squareHigherX = currentEvent.getSegment().getMinX();
                     isValid = hasCeiling(xCoordinates, squareHigherX);
 
                     break;
                 case START_SQ_LOWER:
-                    squareLowerX = currentEvent.getSegment().getUp().x();
+                    squareLowerX = currentEvent.getSegment().getMinX();
                     isValid = hasFloor(xCoordinates, squareLowerX);
                     break;
                 case END_SQ_HIGHER:
@@ -239,20 +239,20 @@ public class MovieTheater {
 
         // Upper segment (right)
         Segment1D rightSegment = new Segment1D(new Point(maxX,minY), new Point(maxX, maxY));
-        events.add(new Event1D(rightSegment.getDown().y(), rightSegment, EventType1D.START_SQ_HIGHER));
-        events.add(new Event1D(rightSegment.getUp().y(), rightSegment, EventType1D.END_SQ_HIGHER));
+        events.add(new Event1D(rightSegment.getMinY(), rightSegment, EventType1D.START_SQ_HIGHER));
+        events.add(new Event1D(rightSegment.getMaxY(), rightSegment, EventType1D.END_SQ_HIGHER));
 
         // Lower segment (left)
         Segment1D leftSegment = new Segment1D(new Point(minX,minY), new Point(minX, maxY));
         if(!rightSegment.equals(leftSegment)) {
-            events.add(new Event1D(leftSegment.getDown().y(), leftSegment, EventType1D.START_SQ_LOWER));
-            events.add(new Event1D(leftSegment.getUp().y(), leftSegment, EventType1D.END_SQ_LOWER));
+            events.add(new Event1D(leftSegment.getMinY(), leftSegment, EventType1D.START_SQ_LOWER));
+            events.add(new Event1D(leftSegment.getMaxY(), leftSegment, EventType1D.END_SQ_LOWER));
         }
 
         // Polygon segments
         for(Segment1D segment : verticalSegments) {
-            events.add(new Event1D(segment.getDown().y(), segment, EventType1D.START));
-            events.add(new Event1D(segment.getUp().y(), segment, EventType1D.END));
+            events.add(new Event1D(segment.getMinY(), segment, EventType1D.START));
+            events.add(new Event1D(segment.getMaxY(), segment, EventType1D.END));
         }
 
         return events;
