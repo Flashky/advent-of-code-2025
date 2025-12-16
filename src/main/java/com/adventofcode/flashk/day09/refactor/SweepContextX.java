@@ -1,11 +1,13 @@
-package com.adventofcode.flashk.day09;
+package com.adventofcode.flashk.day09.refactor;
+
+import com.adventofcode.flashk.day09.Segment1D;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-public class SweepContext {
+public class SweepContextX {
 
     private final TreeSet<Segment1D> activeSegments = new TreeSet<>();
     private Set<Rectangle> activeRectangles = new HashSet<>();
@@ -25,7 +27,7 @@ public class SweepContext {
     public void addRectangle(Rectangle rectangle) {
 
         // TODO y si el rectángulo ya se había borrado del contexto?
-        
+
         validate(rectangle);
         if(rectangle.isValid()) {
             activeRectangles.add(rectangle);
@@ -37,18 +39,18 @@ public class SweepContext {
     }
 
     private Rectangle validate(Rectangle rectangle) {
-
+/*
         long validSides = rectangle.getVerticalSegments().stream()
                                     .filter(this::hasCeiling)
                                     .filter(this::hasFloor)
                                     .count();
-
-        validSides += rectangle.getHorizontalSegments().stream()
+*/
+        long validSides = rectangle.getHorizontalSegments().stream()
                                     .filter(this::hasCeiling)
                                     .filter(this::hasFloor)
                                     .count();
 
-        if (validSides != 4) {
+        if (validSides != 2) {
             rectangle.setValid(false);
         }
 

@@ -2,6 +2,7 @@ package com.adventofcode.flashk.day09;
 
 import module java.base;
 
+import com.adventofcode.flashk.day09.refactor.MovieTheaterRefactor;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
@@ -29,7 +30,7 @@ class Day09Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
-		MovieTheater movieTheater = new MovieTheater(inputs);
+		MovieTheaterRefactor movieTheater = new MovieTheaterRefactor(inputs);
         long result = movieTheater.solveA();
 
 		assertEquals(50L,result);
@@ -45,7 +46,7 @@ class Day09Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		MovieTheater movieTheater = new MovieTheater(inputs);
+		MovieTheaterRefactor movieTheater = new MovieTheaterRefactor(inputs);
         long result = movieTheater.solveA();
 
 		assertEquals(4754955192L,result);
@@ -63,7 +64,7 @@ class Day09Test {
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
 
         //MovieTheaterPolygon2 movieTheater = new MovieTheaterPolygon2(inputs);
-		MovieTheater movieTheater = new MovieTheater(inputs);
+		MovieTheaterRefactor movieTheater = new MovieTheaterRefactor(inputs);
         long result = movieTheater.solveB();
 
 		assertEquals(24L,result);

@@ -1,9 +1,12 @@
-package com.adventofcode.flashk.day09;
+package com.adventofcode.flashk.day09.refactor;
 
+import com.adventofcode.flashk.day09.Point;
+import com.adventofcode.flashk.day09.Segment1D;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -11,8 +14,8 @@ import java.util.Set;
 public class Rectangle {
 
     private final long area;
-    private final Set<Segment1D> verticalSegments;
-    private final Set<Segment1D> horizontalSegments;
+    private final Set<Segment1D> verticalSegments = new HashSet<>();
+    private final Set<Segment1D> horizontalSegments = new HashSet<>();
 
     @Setter
     private boolean isValid = true;
@@ -31,9 +34,10 @@ public class Rectangle {
         Point p3 =  new Point(maxX, minY);
         Point p4 =  new Point(maxX, maxY);
 
-        verticalSegments = Set.of(new Segment1D(p1, p2), new Segment1D(p3, p4));
-        horizontalSegments = Set.of(new Segment1D(p1, p3), new Segment1D(p2, p4));
-
+        verticalSegments.add(new Segment1D(p1, p2));
+        verticalSegments.add(new Segment1D(p3, p4));
+        horizontalSegments.add(new Segment1D(p1, p3));
+        horizontalSegments.add(new Segment1D(p2, p4));
     }
 
     private long area(Point a, Point b) {
