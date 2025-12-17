@@ -7,9 +7,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-public class SweepContextY {
+public class SweepContextY implements SweepContext {
 
-    private final TreeSet<Segment1D> activeSegments = new TreeSet<>();
+    private final TreeSet<Segment1D> activeSegments = new TreeSet<>(new ComparatorSegment1DHorizontal());
     private Set<Rectangle> activeRectangles = new HashSet<>();
 
     public void addSegment(Segment1D segment) {
@@ -44,13 +44,13 @@ public class SweepContextY {
                                     .filter(this::hasCeiling)
                                     .filter(this::hasFloor)
                                     .count();
-/*
-        long validSides += rectangle.getHorizontalSegments().stream()
+
+        validSides += rectangle.getHorizontalSegments().stream()
                                     .filter(this::hasCeiling)
                                     .filter(this::hasFloor)
                                     .count();
-*/
-        if (validSides != 2) {
+
+        if (validSides != 4) {
             rectangle.setValid(false);
         }
 

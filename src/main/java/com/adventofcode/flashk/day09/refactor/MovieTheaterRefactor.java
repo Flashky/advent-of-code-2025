@@ -72,13 +72,18 @@ public class MovieTheaterRefactor {
     }
 
     private void sweep() {
-        sweep(prepareVerticalEvents());
-        sweep(prepareHorizontalEvents());
+        sweep(prepareVerticalEvents(), true);
+        sweep(prepareHorizontalEvents(), false);
     }
 
-    private void sweep(PriorityQueue<Event1DRefactor> events) {
+    private void sweep(PriorityQueue<Event1DRefactor> events, boolean isVerticalSweep) {
 
-        SweepContextX context = new SweepContextX();
+        SweepContext context;
+        if(isVerticalSweep) {
+            context = new SweepContextX();
+        } else {
+            context = new SweepContextY();
+        }
 
         // Variables to handle square edge detection
 
