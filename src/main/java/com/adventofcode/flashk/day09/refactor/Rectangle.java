@@ -8,15 +8,18 @@ import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import static java.util.function.Predicate.not;
 
 @Getter
 @EqualsAndHashCode
 public class Rectangle {
 
     private final long area;
+    private Set<Segment1D> segments = new HashSet<>();
     private final Set<Segment1D> verticalSegments = new HashSet<>();
     private final Set<Segment1D> horizontalSegments = new HashSet<>();
-
     @Setter
     private boolean isValid = true;
 
@@ -38,6 +41,8 @@ public class Rectangle {
         verticalSegments.add(new Segment1D(p3, p4));
         horizontalSegments.add(new Segment1D(p1, p3));
         horizontalSegments.add(new Segment1D(p2, p4));
+        segments = new HashSet<>(verticalSegments);
+        segments.addAll(horizontalSegments);
     }
 
     private long area(Point a, Point b) {
@@ -46,4 +51,5 @@ public class Rectangle {
 
         return dx * dy;
     }
+
 }

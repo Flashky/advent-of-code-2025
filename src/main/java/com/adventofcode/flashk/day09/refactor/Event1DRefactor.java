@@ -13,7 +13,7 @@ public class Event1DRefactor implements Comparable<Event1DRefactor> {
     /// The exact coordinate that triggered the event.
     ///
     /// Can be either an `x` or an `y` coordinate.
-    private int coordinate;
+    private final int coordinate;
 
     /// The segment that triggered the event.
     private Segment1D segment;  // The segment this coordinate event belongs to.
@@ -22,7 +22,7 @@ public class Event1DRefactor implements Comparable<Event1DRefactor> {
     private Rectangle rectangle;
 
     /// The {@link EventType1D type} of event.
-    private EventType1D type;
+    private final EventType1D type;
 
     public Event1DRefactor(int coordinate, Segment1D segment, EventType1D type) {
         this.coordinate = coordinate;

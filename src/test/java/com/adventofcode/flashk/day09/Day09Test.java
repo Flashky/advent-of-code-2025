@@ -80,7 +80,7 @@ class Day09Test {
 		// Read input file
 		List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
 
-		MovieTheater movieTheater = new MovieTheater(inputs);
+		MovieTheaterRefactor movieTheater = new MovieTheaterRefactor(inputs);
         long result = movieTheater.solveB();
 
 		assertEquals(1568849600L,result);

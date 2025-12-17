@@ -1,6 +1,5 @@
 package com.adventofcode.flashk.day09.refactor;
 
-import static java.lang.IO.println;
 
 import module java.base;
 import com.adventofcode.flashk.day09.EventType1D;
@@ -32,9 +31,6 @@ public class MovieTheaterRefactor {
             }
         }
 
-
-
-        //rectangles.stream().mapToLong(Rectangle::getArea).max().getAsLong();
     }
 
     public long solveA() {
@@ -55,7 +51,6 @@ public class MovieTheaterRefactor {
     }
 
     public long solveB() {
-        long result = Long.MIN_VALUE;
 
         // Generate rectangles
         for(int i = 0; i < redTiles.size(); i++) {
@@ -72,20 +67,14 @@ public class MovieTheaterRefactor {
     }
 
     private void sweep() {
-        sweep(prepareVerticalEvents(), true);
-        sweep(prepareHorizontalEvents(), false);
+        sweep(true);
+        sweep(false);
     }
 
-    private void sweep(PriorityQueue<Event1DRefactor> events, boolean isVerticalSweep) {
+    private void sweep(boolean isVerticalSweep) {
 
-        SweepContext context;
-        if(isVerticalSweep) {
-            context = new SweepContextX();
-        } else {
-            context = new SweepContextY();
-        }
-
-        // Variables to handle square edge detection
+        PriorityQueue<Event1DRefactor> events = prepareEvents(isVerticalSweep);
+        SweepContext context = new SweepContext(isVerticalSweep);
 
         while(!events.isEmpty()) {
 
@@ -98,18 +87,20 @@ public class MovieTheaterRefactor {
                 case END:
                     context.removeSegment(currentEvent.getSegment());
                     break;
-                case START_SQ_HIGHER:
-                case START_SQ_LOWER:
+                case START_RECTANGLE:
                     context.addRectangle(currentEvent.getRectangle());
                     break;
-                case END_SQ_HIGHER:
-                case END_SQ_LOWER:
+                case END_RECTANGLE:
                     context.removeRectangle(currentEvent.getRectangle());
                     break;
 
             }
 
         }
+    }
+
+    private PriorityQueue<Event1DRefactor> prepareEvents(boolean isVerticalSweep) {
+        return isVerticalSweep ? prepareVerticalEvents() : prepareHorizontalEvents();
     }
 
     private PriorityQueue<Event1DRefactor> prepareVerticalEvents() {
@@ -120,10 +111,12 @@ public class MovieTheaterRefactor {
 
         // Add all rectangle segments
         for(Rectangle rectangle : rectangles) {
-            Set<Segment1D> rectangleSegments = rectangle.getHorizontalSegments();
-            for(Segment1D segment : rectangleSegments) {
-                events.add(new Event1DRefactor(segment.getMinX(), rectangle, EventType1D.START_SQ_LOWER));
-                events.add(new Event1DRefactor(segment.getMaxX(), rectangle, EventType1D.END_SQ_HIGHER));
+            if(rectangle.isValid()) {
+                Set<Segment1D> rectangleSegments = rectangle.getHorizontalSegments();
+                for (Segment1D segment : rectangleSegments) {
+                    events.add(new Event1DRefactor(segment.getMinX(), rectangle, EventType1D.START_RECTANGLE));
+                    events.add(new Event1DRefactor(segment.getMaxX(), rectangle, EventType1D.END_RECTANGLE));
+                }
             }
         }
 
@@ -144,10 +137,12 @@ public class MovieTheaterRefactor {
 
         // Add all rectangle vertical segments
         for(Rectangle rectangle : rectangles) {
-            Set<Segment1D> rectangleSegments = rectangle.getVerticalSegments();
-            for(Segment1D segment : rectangleSegments) {
-                events.add(new Event1DRefactor(segment.getMinY(), rectangle, EventType1D.START_SQ_LOWER));
-                events.add(new Event1DRefactor(segment.getMaxY(), rectangle, EventType1D.END_SQ_HIGHER));
+            if(rectangle.isValid()) {
+                Set<Segment1D> rectangleSegments = rectangle.getVerticalSegments();
+                for (Segment1D segment : rectangleSegments) {
+                    events.add(new Event1DRefactor(segment.getMinY(), rectangle, EventType1D.START_RECTANGLE));
+                    events.add(new Event1DRefactor(segment.getMaxY(), rectangle, EventType1D.END_RECTANGLE));
+                }
             }
         }
         // Polygon segments
