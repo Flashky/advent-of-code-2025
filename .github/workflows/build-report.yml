@@ -152,6 +152,6 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: target/site/jacoco/jacoco.xml
+          directory: target/surefire-reports
           report_type: test_results
           fail_ci_if_error: false # Para que no rompa el build si Codecov falla
