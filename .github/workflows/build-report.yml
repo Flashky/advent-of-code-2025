@@ -20,6 +20,10 @@ on:
     #paths-ignore:
     #  - '.github/**'
 
+permissions:
+  contents: read
+  checks: write
+  
 jobs:
 
   verify:
@@ -118,7 +122,14 @@ jobs:
           distribution: temurin
           java-version: 25
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn -B package -Dmaven.test.failure.ignore=true --file pom.xml
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: '**/target/surefire-reports/TEST-*.xml'
+          annotate_only: false
+          detailed_summary: true
       - name: Upload Jacoco report artifact
         uses: actions/upload-artifact@v6
         with:
