@@ -124,12 +124,6 @@ jobs:
         with:
           name: jacoco-report
           path: target/site/jacoco/jacoco.
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: target/site/jacoco/jacoco.xml
-          fail_ci_if_error: false # Para que no rompa el build si Codecov falla
 
   # Report job
   # Will be only executed if CODACY_PROJECT_TOKEN is set
@@ -148,3 +142,14 @@ jobs:
         uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: target/site/jacoco/jacoco.xml
+          fail_ci_if_error: false # Para que no rompa el build si Codecov falla
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
