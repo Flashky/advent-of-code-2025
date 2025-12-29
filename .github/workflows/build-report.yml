@@ -155,7 +155,7 @@ jobs:
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
       - name: Upload to Codecov
-        uses: codecov/codecov-action@codecov-action@0106c571744eb8878f7d8f3eafa3559f635f9936 # v5.1.2
+        uses: codecov/codecov-action@0106c571744eb8878f7d8f3eafa3559f635f9936 # v5.1.2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: target/site/jacoco/jacoco.xml
