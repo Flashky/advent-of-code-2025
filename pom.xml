@@ -20,7 +20,7 @@
 		<commons-math3.version>3.6.1</commons-math3.version>
 
 		<!-- Math -->
-		<ojalgo.version>56.1.1</ojalgo.version>
+		<ojalgo.version>56.2.0</ojalgo.version>
 
 		<!-- JSON Management -->
 		<jackson-databind.version>2.20.1</jackson-databind.version>
