@@ -88,37 +88,4 @@ class Day08Test {
 
 	}
 
-    @Test
-    @Order(7)
-    @Tag(TestTag.PART_2)
-    @Tag(TestTag.SAMPLE)
-    @DisplayName(TestDisplayName.PART_2_SAMPLE + " (MST)")
-    void part2SampleWithMSTTest() {
-
-        // Read input file
-        List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.SAMPLE_FILE);
-
-        PlaygroundMST playground = new PlaygroundMST(inputs);
-        long result = playground.solveB();
-
-        assertEquals(25272L,result);
-    }
-
-    @Test
-    @Order(8)
-    @Tag(TestTag.PART_2)
-    @Tag(TestTag.INPUT)
-    @DisplayName(TestDisplayName.PART_2_INPUT + " (MST)")
-    void part2InputWithMSTTest() {
-
-        // Read input file
-        List<String> inputs = Input.readStringLines(INPUT_FOLDER, TestFilename.INPUT_FILE);
-
-        PlaygroundMST playground = new PlaygroundMST(inputs);
-        long result = playground.solveB();
-
-        assertEquals(3200955921L,result);
-
-    }
-
 }
