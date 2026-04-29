@@ -1,0 +1,41 @@
+name: Codacy Baseline Fixer
+on:
+  workflow_run:
+    workflows: ["Build & Report"]
+    types: [completed]
+
+jobs:
+  fix-missing-check:
+    runs-on: ubuntu-latest
+    # Run only when the triggering workflow_run is for a pull_request and at least one PR is present
+    if: ${{ github.event.workflow_run.event == 'pull_request'}}
+
+    steps:
+      - name: Detect and Fix Missing Codacy Check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRS_JSON: ${{ toJSON(github.event.workflow_run.pull_requests) }}
+        run: |
+          # 1. Extract the pull request number that triggered this workflow
+          PR_NUMBER=$(echo "$PRS_JSON" | jq -r '.[0].number')
+          
+          if [ "$PR_NUMBER" == "null" ] || [ -z "$PR_NUMBER" ]; then
+            echo "No se pudo determinar el número de la PR. Abortando."
+            exit 0
+          fi
+          echo "Analizando PR #$PR_NUMBER..."
+          
+          # 2. Wait for report
+          #sleep 60 
+          # 3. Check validation
+          ALL_CHECKS=$(gh pr checks "$PR_NUMBER" --repo "${{ github.repository }}")
+          
+          if echo "$ALL_CHECKS" | grep -q "Codacy Coverage Variation"; then
+            echo "✅ El check 'Codacy Coverage Variation' ya está presente."
+          else
+            echo "⚠️ No se encontró el check de variación en la PR."
+            echo "Relanzando build-report.yml en la rama main..."
+            
+            # 4. Lanzamos tu workflow principal usando su nombre de archivo
+            gh workflow run "build-report.yml" --ref master --repo "${{ github.repository }}"
+          fi
