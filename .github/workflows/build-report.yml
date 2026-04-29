@@ -120,13 +120,13 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
       - name: Upload Jacoco report artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: jacoco-report
           path: target/site/jacoco/jacoco.xml
       - name: Upload Surefire reports artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: surefire-reports
