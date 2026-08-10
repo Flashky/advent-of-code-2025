@@ -26,7 +26,7 @@ jobs:
       # Verifies which kind of files have changes.
       # 'has_code_changes' will be true if any java source file is modified.
       # 'has_non_coverable_changes' will be true if there is any Markdown, YAML file or any other kind of non coverable file.
-      - uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
+      - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         id: changes
         with:
           filters: | 
