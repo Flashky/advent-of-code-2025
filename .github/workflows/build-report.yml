@@ -117,7 +117,7 @@ jobs:
         uses: actions/setup-java@v6
         with:
           distribution: temurin
-          java-version: 25
+          java-version: 27
       - name: Build with Maven
         run: mvn -B package --file pom.xml
       - name: Upload Jacoco report artifact
