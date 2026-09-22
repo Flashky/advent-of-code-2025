@@ -10,7 +10,7 @@ env:
   AOC_YEAR: ${{ github.event.inputs.aoc_year }}
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
 
       # Forbid workflow execution on template repository
@@ -90,7 +90,7 @@ jobs:
           
   update:
     needs: verify
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
 
