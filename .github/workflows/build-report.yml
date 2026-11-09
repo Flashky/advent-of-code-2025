@@ -8,89 +8,41 @@ on:
   push:
     branches:
       - '**'
-    #tags-ignore:
-    #  - '**'
-    #paths-ignore:
-    #  - '.github/**'
   pull_request:
     branches:
       - '**'
-    #tags-ignore:
-    #  - '**'
-    #paths-ignore:
-    #  - '.github/**'
   schedule:
     - cron: '0 3 * * *' # Every day at 03:00 UTC
+      
+permissions:
+  contents: read
+
 jobs:
 
   verify:
-    # Don't run just after creating repo from template
-    if: github.run_number != 1
     runs-on: ubuntu-26.04
     outputs:
-      skip_report_status: ${{ steps.check_codacy_token.outputs.skip_status }}
+      skip_report_status: ${{ steps.check-codacy-token.outputs.skip_status }}
     steps:
 
-      # Verify for existing token secret set
-      - name: Check Personal Access Token
+      - name: Check Required Secrets
         env:
-          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+          AOC_APP_CLIENT_ID: ${{ secrets.AOC_APP_CLIENT_ID }}
+          AOC_APP_PRIVATE_KEY: ${{ secrets.AOC_APP_PRIVATE_KEY }}
         run: |
-          echo "Checking personal access token."
-          SECRETS_URL="${{ github.server_url }}/${{ github.repository }}/settings/secrets/actions"
-          
-          log_pat_error() {
-            echo -e "\e[93mTo generate a personal access token (PAT) for GitHub Actions:\e[0m" >&2
-            echo -e "\e[93m1. Go to \e[94mhttps://github.com/settings/tokens\e[0m" >&2
-            echo -e "\e[93m2. Click on \e[92mGenerate new token\e[0m\e[93m and then on \e[92mGenerate new token (classic) \e[0m\e[93m\e[0m" >&2
-            echo -e "\e[93m3. Give your token a name, select the required scopes (e.g., repo), and click on \e[92mGenerate token\e[93m\e[0m" >&2
-            echo -e "\e[93m4. Copy the generated token" >&2
-            echo -e "\e[93m5. Go to your repository action secret settings: \e[94m$SECRETS_URL\e[93m" >&2
-            echo -e "\e[93m6. Name the secret \e[94mPAT_TOKEN\e[93m and paste the copied token as the value" >&2
-          }
-          
-          if [ -z "$PAT_TOKEN" ]; then
-            echo -e "::group::\e[91m❌ Error: PAT_TOKEN secret is not set.\e[0m" >&2
-            log_pat_error
-            echo "::error title=Missing PAT_TOKEN::PAT_TOKEN secret is not set."
-            echo "::endgroup::"
-            exit 1
-          fi
-          RESPONSE=$(curl -s -D - -H "Authorization: token $PAT_TOKEN" https://api.github.com/user)
-          
-          HTTP_CODE=$(echo "$RESPONSE" | head -n 1 | awk '{print $2}')
-          SCOPES=$(echo "$RESPONSE" | grep -i "X-OAuth-Scopes" | awk '{print $2}' | tr -d '\r')
-          
-          # 1. Verify 401 and 403 errors
-          if [ "$HTTP_CODE" -eq 401 ] || [ "$HTTP_CODE" -eq 403 ]; then
-            echo -e "::group::\e[91m❌ Error: PAT_TOKEN secret is invalid or has expired.\e[0m" >&2
-            log_pat_error
-            echo "::error title=The PAT_TOKEN is invalid or has expired::Please, refresh the PAT_TOKEN."
-            echo "::endgroup::"
-            exit 1
-          fi
-          
-          # Verify other errors
-          if [ "$HTTP_CODE" -ge 400 ]; then
-            echo -e "::group::\e[91m❌ Error: Unexpected HTTP status code ($HTTP_CODE).\e[0m" >&2
-            log_pat_error
-            echo "::error title=Unexpected HTTP Status Code::Found: $HTTPCODE."
-            echo "::endgroup::"
-            exit 1
-          fi
-          
-          if [[ "$SCOPES" != *"repo"* ]]; then
-            echo "::group::\e[91m❌ Error: missing scope 'repo' on the PAT.\e[0m" >&2
-            log_pat_error
-            echo "::error title=Missing permissions at PAT_TOKEN::Please, refresh the PAT_TOKEN with 'repo' scope."
-            echo "::endgroup::"
-            exit 1
-          fi
+          set -uo pipefail
+          MISSING=0
+          for name in AOC_APP_CLIENT_ID AOC_APP_PRIVATE_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "::error title=Missing Secret::$name secret is not set."
+              MISSING=1
+            fi
+          done
+          exit "$MISSING"
 
-      # Verify for existing Codacy token secret set
-      # Setup is optional, reports will be skipped if not set.
+      # Codacy token is optional, in case of not wanting Codacy reports
       - name: Check Codacy Project Token
-        id: check_codacy_token
+        id: check-codacy-token
         continue-on-error: true
         run: |
           if [ -z "${{ secrets.CODACY_PROJECT_TOKEN }}" ]; then
@@ -104,67 +56,59 @@ jobs:
     runs-on: ubuntu-26.04
     needs: verify
     steps:
-      - uses: actions/checkout@v7
+
+      - name: Generate GitHub App Token
+        id: app-token
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3
         with:
+          client-id: ${{ secrets.AOC_APP_CLIENT_ID }}
+          private-key: ${{ secrets.AOC_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: |
+            ${{ github.event.repository.name }}
+            ${{ github.event.repository.name }}-data
+          permission-contents: read
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
           submodules: recursive
-          token: ${{ secrets.PAT_TOKEN }}
-      - uses: actions/cache@v6
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
       - name: Set up JDK
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
         with:
           distribution: temurin
           java-version: 27
       - name: Build with Maven
         run: mvn -B package --file pom.xml
       - name: Upload Jacoco report artifact
-        uses: actions/upload-artifact@v7
-        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: jacoco-report
           path: target/site/jacoco/jacoco.xml
-      - name: Upload Surefire reports artifact
-        uses: actions/upload-artifact@v7
-        if: always()
-        with:
-          name: surefire-reports
-          path: target/surefire-reports/TEST-*.xml
 
   # Report job
   # Will be only executed if CODACY_PROJECT_TOKEN is set
   report:
     runs-on: ubuntu-26.04
     needs: build
-    if: always() && needs.build.result != 'skipped' && needs.verify.outputs.skip_report_status == 'false'
+    if: ${{ needs.verify.outputs.skip_report_status == 'false' }}
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
       - name: Download Jacoco report artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
         with:
           name: jacoco-report
           path: target/site/jacoco
-      - name: Download Surefire reports artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: surefire-reports
-          path: target/surefire-reports
       - name: Send coverage to Codacy
         uses: codacy/codacy-coverage-reporter-action@89d6c85cfafaec52c72b6c5e8b2878d33104c699 # v1.3.0
         with:
           project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v5.1.2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: target/site/jacoco/jacoco.xml
-          fail_ci_if_error: false
-      - name: Upload test results to Codecov
-        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v5.1.2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: target/surefire-reports
-          report_type: test_results
-          fail_ci_if_error: false
