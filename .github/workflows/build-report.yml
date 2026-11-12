@@ -27,12 +27,12 @@ jobs:
 
       - name: Check Required Secrets
         env:
-          AOC_APP_CLIENT_ID: ${{ secrets.AOC_APP_CLIENT_ID }}
-          AOC_APP_PRIVATE_KEY: ${{ secrets.AOC_APP_PRIVATE_KEY }}
+          AOC_CI_APP_CLIENT_ID: ${{ secrets.AOC_CI_APP_CLIENT_ID }}
+          AOC_CI_APP_PRIVATE_KEY: ${{ secrets.AOC_CI_APP_PRIVATE_KEY }}
         run: |
           set -uo pipefail
           MISSING=0
-          for name in AOC_APP_CLIENT_ID AOC_APP_PRIVATE_KEY; do
+          for name in AOC_CI_APP_CLIENT_ID AOC_CI_APP_PRIVATE_KEY; do
             if [ -z "${!name:-}" ]; then
               echo "::error title=Missing Secret::$name secret is not set."
               MISSING=1
@@ -61,8 +61,8 @@ jobs:
         id: app-token
         uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3
         with:
-          client-id: ${{ secrets.AOC_APP_CLIENT_ID }}
-          private-key: ${{ secrets.AOC_APP_PRIVATE_KEY }}
+          client-id: ${{ secrets.AOC_CI_APP_CLIENT_ID }}
+          private-key: ${{ secrets.AOC_CI_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: |
             ${{ github.event.repository.name }}
